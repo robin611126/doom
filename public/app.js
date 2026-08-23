@@ -106,26 +106,28 @@ async function initSession() {
       const params = new URLSearchParams(location.hash.substring(1));
       const accessToken = params.get('access_token');
       if (accessToken) {
-        const res = await fetch('https://ouwucsjpnjnyjmpeayqb.supabase.co/auth/v1/user', {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        const supaUser = await res.json();
-        if (supaUser && supaUser.email) {
+        const payloadB64 = accessToken.split('.')[1];
+        const payloadJson = decodeURIComponent(atob(payloadB64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        const payload = JSON.parse(payloadJson);
+        const userEmail = payload.email;
+        const userName = payload.user_metadata?.full_name || payload.user_metadata?.name || userEmail?.split('@')[0] || '';
+
+        if (userEmail) {
           const data = await api('/auth/google', {
             method: 'POST',
-            body: JSON.stringify({ email: supaUser.email, name: supaUser.user_metadata?.full_name || '' }),
+            body: JSON.stringify({ email: userEmail, name: userName }),
           });
           TOKEN = data.token;
           currentUser = data.user;
           localStorage.setItem(TOKEN_KEY, TOKEN);
           history.replaceState(null, '', location.pathname);
-          toast('✓ Signed in with Google! 50 credits active.', 'ok');
+          toast('✓ Signed in with Google! 50 bonus credits.', 'ok');
           enterStudio();
           return;
         }
       }
     } catch (e) {
-      console.error('Google OAuth callback error:', e);
+      console.error('Google OAuth callback hash parse error:', e);
     }
   }
 
