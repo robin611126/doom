@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "build": "echo Build completed",
     "start": "node server.js",
     "dev": "node server.js"
   },
