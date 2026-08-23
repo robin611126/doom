@@ -224,41 +224,37 @@ window.handleGoogleCredential = handleGoogleCredential;
 
 if ($('#googleAuthBtn')) {
   $('#googleAuthBtn').onclick = () => {
-    if (window.google && google.accounts && google.accounts.id) {
-      google.accounts.id.initialize({
-        client_id: window.GOOGLE_CLIENT_ID || '1081156296316-demo.apps.googleusercontent.com',
-        callback: handleGoogleCredential,
-      });
-      google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          openGoogleEmailPrompt();
-        }
-      });
-    } else {
-      openGoogleEmailPrompt();
+    if ($('#formAuthGoogle')) {
+      $('#formAuthGoogle').classList.toggle('hidden');
+      if (!$('#formAuthGoogle').classList.contains('hidden') && $('#googleEmailInput')) {
+        $('#googleEmailInput').focus();
+      }
     }
   };
 }
 
-function openGoogleEmailPrompt() {
-  const userEmail = prompt('Enter your Google Account Email to sign in / sign up:');
-  if (!userEmail || !userEmail.includes('@')) {
-    if (userEmail) toast('Valid email address required', 'err');
-    return;
-  }
-  const userName = userEmail.split('@')[0];
-  api('/auth/google', {
-    method: 'POST',
-    body: JSON.stringify({ email: userEmail, name: userName }),
-  }).then((data) => {
-    TOKEN = data.token;
-    currentUser = data.user;
-    localStorage.setItem(TOKEN_KEY, TOKEN);
-    toast('✓ Signed in with Google! 50 credits active.', 'ok');
-    enterStudio();
-  }).catch((e) => {
-    toast(e.message, 'err');
-  });
+if ($('#googleEmailSubmitBtn')) {
+  $('#googleEmailSubmitBtn').onclick = async () => {
+    const email = $('#googleEmailInput').value.trim();
+    if (!email || !email.includes('@')) {
+      toast('Valid Google Account email required', 'err');
+      return;
+    }
+    const name = email.split('@')[0];
+    try {
+      const data = await api('/auth/google', {
+        method: 'POST',
+        body: JSON.stringify({ email, name }),
+      });
+      TOKEN = data.token;
+      currentUser = data.user;
+      localStorage.setItem(TOKEN_KEY, TOKEN);
+      toast('✓ Signed in with Google Account! 50 bonus credits.', 'ok');
+      enterStudio();
+    } catch (e) {
+      toast(e.message, 'err');
+    }
+  };
 }
 
 $('#enterBtn').onclick = () => {
