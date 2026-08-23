@@ -1,0 +1,34 @@
+[
+  {
+    "key": "master-c2hpdmFt_3566a4353ca6bddcb5e2a322aa9e661a",
+    "label": "shivam",
+    "createdAt": 1787393547975,
+    "expiresAt": null,
+    "expiresReadable": "Never",
+    "permissions": {
+      "text": true,
+      "image": true,
+      "cinema": true,
+      "effects": true
+    },
+    "isRevoked": false,
+    "usageCount": 1356,
+    "lastUsed": 1787493704991
+  },
+  {
+    "key": "master-dGVzdF9jbGllbnQ_30cff3bc40f722eae92f21765a9ae013",
+    "label": "test_client",
+    "createdAt": 1787393560429,
+    "expiresAt": null,
+    "expiresReadable": "Never",
+    "permissions": {
+      "text": true,
+      "image": false,
+      "cinema": true,
+      "effects": true
+    },
+    "isRevoked": true,
+    "usageCount": 1,
+    "lastUsed": 1787393560441
+  }
+]

@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Neon Studio · Google Cloud Style Admin Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --g-bg: #18191c;
+    --g-surface: #202124;
+    --g-surface-elevated: #28292c;
+    --g-card: #2d2e31;
+    --g-border: #3c4043;
+    --g-border-subtle: #2e3134;
+    --g-blue: #8ab4f8;
+    --g-blue-hover: #aecbfa;
+    --g-blue-bg: #1a73e8;
+    --g-blue-active: rgba(138, 180, 248, 0.15);
+    --g-text: #e8eaed;
+    --g-text-secondary: #9aa0a6;
+    --g-green: #81c995;
+    --g-green-bg: rgba(129, 201, 149, 0.15);
+    --g-red: #f28b82;
+    --g-red-bg: rgba(242, 139, 130, 0.15);
+    --g-yellow: #fdd663;
+    --g-yellow-bg: rgba(253, 214, 99, 0.15);
+    --g-font-sans: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    --g-font-mono: 'Roboto Mono', monospace;
+    --g-shadow: 0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--g-bg);
+    color: var(--g-text);
+    font-family: var(--g-font-sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* ── GOOGLE COLOR STRIPE ────────────────────────────────────── */
+  .google-stripe {
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(90deg, #4285f4 0%, #ea4335 25%, #fbbc05 50%, #34a853 75%, #4285f4 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+
+  /* ── GOOGLE TOPBAR ─────────────────────────────────────────── */
+  .topbar {
+    height: 56px;
+    background: var(--g-surface);
+    border-bottom: 1px solid var(--g-border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    position: sticky;
+    top: 3px;
+    z-index: 100;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--g-text);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+  }
+  .menu-toggle:hover { background: var(--g-surface-elevated); }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--g-font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--g-text);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #4285f4;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: #fff;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .badge-admin {
+    background: #3c4043;
+    color: var(--g-blue);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin-left: 2px;
+  }
+
+  .search-box {
+    flex: 1;
+    max-width: 500px;
+    position: relative;
+    margin: 0 auto;
+  }
+
+  .search-box input {
+    width: 100%;
+    background: var(--g-surface-elevated);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--g-text);
+    padding: 8px 16px 8px 36px;
+    font-size: 13.5px;
+    font-family: var(--g-font-sans);
+    outline: none;
+    transition: all 0.15s ease;
+  }
+
+  .search-box input:focus {
+    background: #303134;
+    border-color: var(--g-blue);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--g-text-secondary);
+    font-size: 13px;
+  }
+
+  .spacer { flex: 1; }
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--g-blue-bg);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .topbar-btn {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--g-blue);
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    border: 1px solid var(--g-border);
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .topbar-btn:hover {
+    background: rgba(138, 180, 248, 0.08);
+    border-color: var(--g-blue);
+  }
+
+  .topbar-btn.danger { color: var(--g-red); }
+  .topbar-btn.danger:hover { background: rgba(242, 139, 130, 0.1); border-color: var(--g-red); }
+
+  /* ── GOOGLE LOGIN CARD ─────────────────────────────────────── */
+  #loginView {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--g-surface);
+    border: 1px solid var(--g-border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    box-shadow: var(--g-shadow);
+    text-align: center;
+  }
+
+  .login-card .g-logo {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+    color: var(--g-blue);
+  }
+
+  .login-card h1 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--g-text);
+  }
+
+  .login-card p {
+    font-size: 13.5px;
+    color: var(--g-text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  input[type=password], input[type=text], input[type=number], select, textarea {
+    width: 100%;
+    background: var(--g-surface-elevated);
+    border: 1px solid var(--g-border);
+    border-radius: 6px;
+    color: var(--g-text);
+    padding: 11px 14px;
+    font-size: 14px;
+    font-family: var(--g-font-sans);
+    outline: none;
+    transition: border-color 0.15s;
+    min-height: 44px;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--g-blue);
+    background: #2b2c30;
+  }
+
+  .btn {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 24px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #fff;
+    background: var(--g-blue-bg);
+    margin-top: 16px;
+    transition: background 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn:hover { background: #1967d2; }
+
+  .err-msg {
+    color: var(--g-red);
+    background: var(--g-red-bg);
+    border: 1px solid rgba(242, 139, 130, 0.3);
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-top: 14px;
+    display: none;
+  }
+
+  /* ── MAIN DASHBOARD LAYOUT ────────────────────────────────── */
+  #dashView { display: none; flex: 1; overflow: hidden; position: relative; }
+  #dashView.show { display: flex; }
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 80;
+  }
+
+  .sidebar {
+    width: 240px;
+    background: var(--g-surface);
+    border-right: 1px solid var(--g-border);
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--g-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 12px 14px 6px;
+  }
+
+  .nav-item {
+    padding: 10px 14px;
+    border-radius: 20px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--g-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.15s ease;
+    user-select: none;
+    min-height: 42px;
+  }
+
+  .nav-item:hover {
+    color: var(--g-text);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .nav-item.active {
+    background: var(--g-blue-active);
+    color: var(--g-blue);
+    font-weight: 700;
+  }
+
+  .nav-sep { height: 1px; background: var(--g-border); margin: 8px 10px; }
+
+  .content { flex: 1; padding: 24px 28px; overflow-y: auto; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--g-text);
+  }
+
+  .page-sub { color: var(--g-text-secondary); font-size: 13px; margin-bottom: 20px; }
+
+  /* ── GOOGLE STAT CARDS ─────────────────────────────────────── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--g-card);
+    border: 1px solid var(--g-border);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  .stat-card .lbl {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--g-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .val {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--g-text);
+    line-height: 1.1;
+  }
+
+  /* ── GOOGLE MATERIAL CARD ──────────────────────────────────── */
+  .card {
+    background: var(--g-card);
+    border: 1px solid var(--g-border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .card h3 {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    color: var(--g-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── FORM CONTROL ─────────────────────────────────────────── */
+  .fg { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .fg input, .fg select { flex: 1; min-width: 130px; }
+  .fg .btn { margin: 0; width: auto; padding: 10px 20px; flex-shrink: 0; }
+
+  label.fl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--g-text);
+    cursor: pointer;
+    background: var(--g-surface-elevated);
+    border: 1px solid var(--g-border);
+    padding: 10px 14px;
+    border-radius: 6px;
+    min-height: 42px;
+  }
+
+  label.fl:hover { border-color: var(--g-blue); }
+  label.fl input { width: 18px; height: 18px; accent-color: var(--g-blue); }
+
+  .perms { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 14px; }
+
+  /* ── KEY RESULT CODE ───────────────────────────────────────── */
+  .key-result {
+    margin-top: 14px;
+    background: var(--g-surface-elevated);
+    border: 1px solid var(--g-border);
+    border-radius: 6px;
+    padding: 14px;
+    display: none;
+    font-size: 13px;
+  }
+
+  .key-result code {
+    display: block;
+    color: var(--g-blue);
+    font-family: var(--g-font-mono);
+    word-break: break-all;
+    font-size: 12.5px;
+    margin: 8px 0;
+    background: #18191c;
+    padding: 10px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--g-border);
+  }
+
+  .key-result .meta { font-size: 12px; color: var(--g-text-secondary); }
+
+  /* ── GOOGLE DATA TABLE ─────────────────────────────────────── */
+  .tbl-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--g-border);
+    border-radius: 8px;
+    background: var(--g-card);
+  }
+
+  table.ktbl { width: 100%; min-width: 660px; border-collapse: collapse; text-align: left; font-size: 13px; }
+
+  table.ktbl th {
+    background: var(--g-surface);
+    padding: 12px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--g-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 1px solid var(--g-border);
+  }
+
+  table.ktbl td { padding: 12px 14px; border-bottom: 1px solid var(--g-border-subtle); vertical-align: middle; }
+  table.ktbl tr:last-child td { border-bottom: none; }
+  table.ktbl tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+  /* ── GOOGLE MATERIAL CHIPS ─────────────────────────────────── */
+  .badge-status {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .badge-status.active { background: var(--g-green-bg); color: var(--g-green); border: 1px solid rgba(129, 201, 149, 0.3); }
+  .badge-status.revoked { background: var(--g-red-bg); color: var(--g-red); border: 1px solid rgba(242, 139, 130, 0.3); }
+  .badge-status.expired { background: var(--g-yellow-bg); color: var(--g-yellow); border: 1px solid rgba(253, 214, 99, 0.3); }
+
+  .badge-perm {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 500;
+    background: var(--g-surface-elevated);
+    color: var(--g-text-secondary);
+    border: 1px solid var(--g-border);
+  }
+
+  .badge-perm.on { background: var(--g-blue-active); color: var(--g-blue); border-color: rgba(138, 180, 248, 0.3); }
+
+  /* ── GOOGLE BUTTON STYLES ──────────────────────────────────── */
+  .mini {
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 4px;
+    background: transparent;
+    border: 1px solid var(--g-border);
+    color: var(--g-blue);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.15s;
+    touch-action: manipulation;
+  }
+
+  .mini:hover { background: rgba(138, 180, 248, 0.08); }
+  .mini.green { color: var(--g-green); border-color: rgba(129, 201, 149, 0.4); }
+  .mini.green:hover { background: var(--g-green-bg); }
+  .mini.red { color: var(--g-red); border-color: rgba(242, 139, 130, 0.4); }
+  .mini.red:hover { background: var(--g-red-bg); }
+
+  /* ── GOOGLE INFO CALLOUT ───────────────────────────────────── */
+  .info-box {
+    background: rgba(138, 180, 248, 0.08);
+    border-left: 4px solid var(--g-blue);
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--g-text);
+    line-height: 1.5;
+    margin-bottom: 18px;
+    border-radius: 0 6px 6px 0;
+  }
+
+  /* ── GOOGLE TOAST NOTIFICATION ─────────────────────────────── */
+  #toasts {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 999;
+    pointer-events: none;
+  }
+
+  .toast {
+    pointer-events: auto;
+    background: #323336;
+    color: #fff;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 400;
+    max-width: 400px;
+    margin: 0 auto;
+    box-shadow: 0 3px 5px -1px rgba(0,0,0,0.2), 0 6px 10px 0 rgba(0,0,0,0.14);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toast.ok { border-left: 4px solid var(--g-green); }
+  .toast.err { border-left: 4px solid var(--g-red); }
+
+  /* ── RESPONSIVE MEDIA QUERIES (MOBILE OPTIMIZATIONS) ────────── */
+  @media (max-width: 768px) {
+    .menu-toggle { display: block; }
+    .search-box { display: none; }
+    .topbar { padding: 0 12px; }
+
+    .sidebar-backdrop.show { display: block; }
+    .sidebar {
+      position: fixed;
+      top: 59px;
+      bottom: 0;
+      left: 0;
+      z-index: 90;
+      transform: translateX(-100%);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+    .sidebar.mobile-open { transform: translateX(0); }
+
+    .content { padding: 18px 16px; }
+    .stat-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-card { padding: 12px 14px; }
+    .stat-card .val { font-size: 20px; }
+    .stat-card .lbl { font-size: 10.5px; }
+
+    .card { padding: 16px; }
+    .fg input, .fg select { width: 100%; min-width: 100%; }
+    .fg .btn { width: 100%; }
+  }
+
+  @media (max-width: 480px) {
+    .topbar-btn { padding: 5px 8px; font-size: 11.5px; }
+    .logo span { font-size: 14px; }
+    .badge-admin { display: none; }
+    .stat-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="google-stripe"></div>
+
+<!-- GOOGLE CLOUD TOPBAR -->
+<div class="topbar">
+  <button class="menu-toggle" id="menuToggleBtn">☰</button>
+
+  <a href="/" class="logo">
+    <div class="logo-icon">D</div>
+    <span>Doom Console</span> <span class="badge-admin">ADMIN</span>
+  </a>
+
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Search API keys, IAM permissions, logs, or system controls...">
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="user-profile">
+    <span id="adminBadge" style="font-size:12.5px;color:var(--g-text-secondary);display:none">Admin</span>
+    <button class="topbar-btn danger" id="logoutBtn" style="display:none">Sign out</button>
+    <a href="/" class="topbar-btn">← Studio</a>
+    <div class="avatar">A</div>
+  </div>
+</div>
+
+<!-- GOOGLE LOGIN VIEW -->
+<div id="loginView">
+  <div class="login-card">
+    <div class="g-logo">Google Cloud</div>
+    <h1>Sign in to Admin Console</h1>
+    <p>Enter administrator credentials to access key management, telemetry, and IAM access controls.</p>
+    <input type="password" id="secretInput" placeholder="Master Admin Secret Key" autocomplete="current-password">
+    <button class="btn" id="loginBtn">Next →</button>
+    <div class="err-msg" id="loginErr">❌ Invalid administrator credentials. Access denied.</div>
+  </div>
+</div>
+
+<!-- MAIN DASHBOARD VIEW -->
+<div id="dashView">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="sidebar" id="sidebarMenu">
+    <div class="sidebar-section-title">IAM & Admin Controls</div>
+    <div class="nav-item active" data-page="overview">📊 Overview</div>
+    <div class="nav-item" data-page="manage">🔑 Key Management</div>
+    <div class="nav-item" data-page="mint">✨ Mint API Keys</div>
+    <div class="nav-item" data-page="verify">🔍 Verify Key</div>
+    <div class="nav-sep"></div>
+    <div class="sidebar-section-title">Platform</div>
+    <div class="nav-item" data-page="settings">⚙️ Console Settings</div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE: OVERVIEW -->
+    <div class="page active" id="page-overview">
+      <div class="page-title">Console Dashboard</div>
+      <div class="page-sub">Telemetry, active API key quota, and engine status.</div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="lbl">Active Keys</div>
+          <div class="val" id="ovActiveKeys" style="color:var(--g-green)">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Revoked Keys</div>
+          <div class="val" id="ovRevokedKeys" style="color:var(--g-red)">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Total API Requests</div>
+          <div class="val" id="ovTotalUsage" style="color:var(--g-blue)">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Server Time (UTC)</div>
+          <div class="val" id="ovServerTime" style="font-size:14px;margin-top:6px;color:var(--g-text-secondary)">—</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        💡 <strong>Google Cloud Hardening:</strong> Persistent storage is active. API keys are HMAC-SHA256 verified. Expired or banned credentials are blocked at the edge.
+      </div>
+
+      <div class="card">
+        <h3>🔗 Console Quick Links</h3>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
+          <a href="/" target="_blank" style="color:var(--g-blue);text-decoration:none">🌐 Live Studio Web Interface →</a>
+          <a href="/api/health" target="_blank" style="color:var(--g-blue);text-decoration:none">❤️ API Engine Health Telemetry →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: KEY MANAGEMENT -->
+    <div class="page" id="page-manage">
+      <div class="page-title">Key Management & Access Control</div>
+      <div class="page-sub">View, filter, revoke, or edit IAM feature permissions for all API keys.</div>
+
+      <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+        <input type="text" id="keySearch" placeholder="Filter by key label, prefix, or status..." style="max-width:320px">
+        <div class="spacer"></div>
+        <button class="mini" id="refreshKeysBtn">🔄 Refresh</button>
+      </div>
+
+      <div class="tbl-container">
+        <table class="ktbl">
+          <thead>
+            <tr>
+              <th>Label / Owner</th>
+              <th>API Credential</th>
+              <th>Status</th>
+              <th>Permissions</th>
+              <th>Expiration</th>
+              <th>Requests</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="keysTbody">
+            <tr><td colspan="7" style="text-align:center;color:var(--g-text-secondary);padding:24px">Loading API key registry...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: MINT KEY -->
+    <div class="page" id="page-mint">
+      <div class="page-title">Mint New API Credentials</div>
+      <div class="page-sub">Generate cryptographically signed keys with granular service permissions and expiration limits.</div>
+
+      <div class="card">
+        <h3>Credential Details</h3>
+        <div class="fg">
+          <input type="text" id="mintLabel" placeholder="User label (e.g. client-john, app-prod-01)" style="flex:2">
+        </div>
+
+        <div style="margin-bottom:14px">
+          <div style="font-size:12px;font-weight:500;color:var(--g-text-secondary);margin-bottom:8px">Key Expiration (leave empty for unlimited)</div>
+          <div class="fg">
+            <input type="number" id="mintAmount" placeholder="Duration (e.g. 30)" min="1" style="width:160px;flex:none">
+            <select id="mintUnit">
+              <option value="unlimited" selected>Unlimited</option>
+              <option value="days">Days</option>
+              <option value="hours">Hours</option>
+              <option value="months">Months</option>
+              <option value="years">Years</option>
+              <option value="minutes">Minutes</option>
+              <option value="seconds">Seconds</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="font-size:12px;font-weight:500;color:var(--g-text-secondary);margin-bottom:8px">Feature Permissions</div>
+        <div class="perms">
+          <label class="fl"><input type="checkbox" id="pText" checked> Text-to-Video</label>
+          <label class="fl"><input type="checkbox" id="pImage" checked> Image-to-Video</label>
+          <label class="fl"><input type="checkbox" id="pCinema" checked> Cinema Templates</label>
+          <label class="fl"><input type="checkbox" id="pEffects" checked> AI Effects</label>
+        </div>
+
+        <button class="btn" style="margin-top:8px" id="mintBtn">Create Credential →</button>
+
+        <div class="key-result" id="mintResult">
+          <div style="font-size:12px;font-weight:700;color:var(--g-text-secondary)">Generated API Credential</div>
+          <code id="mintKeyCode"></code>
+          <div class="meta" id="mintKeyMeta"></div>
+          <div style="display:flex;gap:10px;margin-top:14px">
+            <button class="mini green" id="copyKeyBtn">📋 Copy Key</button>
+            <button class="mini" id="copyJsonBtn">{ } Copy JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: VERIFY KEY -->
+    <div class="page" id="page-verify">
+      <div class="page-title">Verify API Credential</div>
+      <div class="page-sub">Check key cryptographic validity, database record, and permissions.</div>
+      <div class="card">
+        <div class="fg">
+          <input type="text" id="verifyInput" placeholder="Paste a master-... API key here">
+          <button class="btn" style="margin:0;width:auto;padding:10px 24px" id="verifyBtn">Verify Credential</button>
+        </div>
+        <div id="verifyResult" style="margin-top:16px;font-size:14px;display:none"></div>
+      </div>
+    </div>
+
+    <!-- PAGE: SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-title">Console Settings</div>
+      <div class="page-sub">Read-only configuration reference and security policy.</div>
+
+      <div class="card">
+        <h3>Security & Engine Status</h3>
+        <div style="display:grid;gap:14px">
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--g-text-secondary);margin-bottom:6px">Master Secret Key</div>
+            <input type="text" value="Set via MASTER_KEY environment variable" readonly>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--g-text-secondary);margin-bottom:6px">Upstream Backend Engine</div>
+            <input type="text" value="🔒 Protected Serverless Backend Engine (Fully Obfuscated)" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /dashView -->
+
+<div id="toasts"></div>
+
+<script>
+  const $ = (s) => document.querySelector(s);
+  const SESSION_KEY = 'neon_admin_session';
+
+  let ADMIN_SECRET = '';
+  let mintedKeyData = null;
+  let allKeysList = [];
+
+  // Mobile menu toggle handling
+  const menuBtn = $('#menuToggleBtn');
+  const sidebar = $('#sidebarMenu');
+  const backdrop = $('#sidebarBackdrop');
+
+  function toggleMobileMenu() {
+    sidebar.classList.toggle('mobile-open');
+    backdrop.classList.toggle('show');
+  }
+
+  function closeMobileMenu() {
+    sidebar.classList.remove('mobile-open');
+    backdrop.classList.remove('show');
+  }
+
+  if (menuBtn) menuBtn.onclick = toggleMobileMenu;
+  if (backdrop) backdrop.onclick = closeMobileMenu;
+
+  function toast(msg, type = '') {
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    $('#toasts').appendChild(t);
+    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 260); }, 3200);
+  }
+
+  async function adminFetch(path, opts = {}) {
+    const res = await fetch(path, {
+      ...opts,
+      headers: { 'Content-Type': 'application/json', 'x-admin': ADMIN_SECRET, ...(opts.headers || {}) },
+    });
+    const data = await res.json().catch(() => ({ error: 'Invalid server response' }));
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  }
+
+  async function authCheck(secret) {
+    const res = await fetch('/api/admin/data', {
+      headers: { 'Content-Type': 'application/json', 'x-admin': secret }
+    });
+    return res.status !== 403;
+  }
+
+  function showDash() {
+    $('#loginView').style.display = 'none';
+    $('#dashView').classList.add('show');
+    $('#adminBadge').style.display = 'inline';
+    $('#logoutBtn').style.display = 'inline-flex';
+    refreshOverview();
+    loadKeysTable();
+  }
+
+  function showLogin() {
+    $('#dashView').classList.remove('show');
+    $('#loginView').style.display = 'flex';
+    $('#adminBadge').style.display = 'none';
+    $('#logoutBtn').style.display = 'none';
+  }
+
+  async function refreshOverview() {
+    try {
+      const d = await adminFetch('/api/admin/data');
+      const st = d.stats || {};
+      const t = new Date(st.serverTime || Date.now());
+      $('#ovServerTime').textContent = t.toUTCString().replace('GMT', '');
+      $('#ovActiveKeys').textContent = st.active || 0;
+      $('#ovRevokedKeys').textContent = st.revoked || 0;
+      $('#ovTotalUsage').textContent = st.totalUsage || 0;
+    } catch {}
+  }
+
+  async function loadKeysTable() {
+    try {
+      const d = await adminFetch('/api/admin/keys');
+      allKeysList = d.keys || [];
+      renderKeysTable(allKeysList);
+    } catch (e) {
+      $('#keysTbody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--g-red);padding:24px">Error loading keys: ${e.message}</td></tr>`;
+    }
+  }
+
+  function renderKeysTable(keys) {
+    const tbody = $('#keysTbody');
+    const query = ($('#keySearch').value || '').toLowerCase().trim();
+    const filtered = keys.filter(k => (k.label || '').toLowerCase().includes(query) || (k.key || '').toLowerCase().includes(query) || (k.status || '').includes(query));
+
+    if (!filtered.length) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--g-text-secondary);padding:32px">No API credentials found</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(k => {
+      const maskedKey = k.key.slice(0, 14) + '...' + k.key.slice(-4);
+      const statusClass = k.status === 'active' ? 'active' : k.status === 'revoked' ? 'revoked' : 'expired';
+      const statusLabel = k.status === 'active' ? 'Active' : k.status === 'revoked' ? 'Revoked' : 'Expired';
+
+      const perms = k.permissions || {};
+      const permBadges = `
+        <span class="badge-perm ${perms.text !== false ? 'on' : ''}">Text</span>
+        <span class="badge-perm ${perms.image !== false ? 'on' : ''}">Img</span>
+        <span class="badge-perm ${perms.cinema !== false ? 'on' : ''}">Cin</span>
+        <span class="badge-perm ${perms.effects !== false ? 'on' : ''}">Eff</span>
+      `;
+
+      const expDate = k.expiresAt ? new Date(k.expiresAt).toLocaleDateString() : 'Never';
+      const actionBtn = k.isRevoked
+        ? `<button class="mini green" onclick="unrevokeKeyAction('${k.key}')">Unrevoke</button>`
+        : `<button class="mini red" onclick="revokeKeyAction('${k.key}')">Revoke</button>`;
+
+      return `
+        <tr>
+          <td><strong style="color:var(--g-text);font-weight:500">${k.label}</strong></td>
+          <td>
+            <code style="font-size:11.5px;color:var(--g-blue);font-family:var(--g-font-mono)">${maskedKey}</code>
+            <button class="mini" style="margin-left:4px" onclick="copyText('${k.key}')">📋</button>
+          </td>
+          <td><span class="badge-status ${statusClass}">${statusLabel}</span></td>
+          <td><div style="display:flex;gap:4px;flex-wrap:wrap">${permBadges}</div></td>
+          <td style="font-size:12px;color:var(--g-text-secondary)">${expDate}</td>
+          <td><b style="color:var(--g-text)">${k.usageCount || 0}</b></td>
+          <td>
+            <div style="display:flex;gap:6px">
+              ${actionBtn}
+              <button class="mini red" onclick="deleteKeyAction('${k.key}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  window.copyText = (txt) => {
+    navigator.clipboard.writeText(txt);
+    toast('Copied to clipboard ✓', 'ok');
+  };
+
+  window.revokeKeyAction = async (key) => {
+    if (!confirm('Revoke access for this API credential?')) return;
+    try {
+      await adminFetch('/api/admin/revoke', { method: 'POST', body: JSON.stringify({ key }) });
+      toast('Credential access revoked ✓', 'ok');
+      refreshOverview();
+      loadKeysTable();
+    } catch (e) { toast(e.message, 'err'); }
+  };
+
+  window.unrevokeKeyAction = async (key) => {
+    try {
+      await adminFetch('/api/admin/unrevoke', { method: 'POST', body: JSON.stringify({ key }) });
+      toast('Credential access restored ✓', 'ok');
+      refreshOverview();
+      loadKeysTable();
+    } catch (e) { toast(e.message, 'err'); }
+  };
+
+  window.deleteKeyAction = async (key) => {
+    if (!confirm('Permanently delete this key record?')) return;
+    try {
+      await adminFetch('/api/admin/delete', { method: 'POST', body: JSON.stringify({ key }) });
+      toast('Key entry deleted ✓', 'ok');
+      refreshOverview();
+      loadKeysTable();
+    } catch (e) { toast(e.message, 'err'); }
+  };
+
+  $('#keySearch').oninput = () => renderKeysTable(allKeysList);
+  $('#refreshKeysBtn').onclick = () => { loadKeysTable(); refreshOverview(); toast('Key registry updated', 'ok'); };
+
+  // Login button
+  $('#loginBtn').onclick = async () => {
+    const secret = $('#secretInput').value.trim();
+    if (!secret) { $('#loginErr').style.display = 'block'; $('#loginErr').textContent = 'Please enter administrator credentials.'; return; }
+    $('#loginBtn').textContent = 'Authenticating…'; $('#loginBtn').disabled = true;
+    const ok = await authCheck(secret);
+    $('#loginBtn').textContent = 'Next →'; $('#loginBtn').disabled = false;
+    if (ok) {
+      ADMIN_SECRET = secret;
+      sessionStorage.setItem(SESSION_KEY, secret);
+      $('#loginErr').style.display = 'none';
+      showDash();
+    } else {
+      $('#loginErr').style.display = 'block';
+      $('#loginErr').textContent = '❌ Invalid administrator credentials. Access denied.';
+    }
+  };
+  $('#secretInput').onkeydown = (e) => { if (e.key === 'Enter') $('#loginBtn').click(); };
+
+  // Logout
+  $('#logoutBtn').onclick = () => {
+    ADMIN_SECRET = '';
+    sessionStorage.removeItem(SESSION_KEY);
+    $('#secretInput').value = '';
+    showLogin();
+    toast('Signed out of Admin Console', 'ok');
+  };
+
+  // Sidebar navigation
+  document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+    item.onclick = () => {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      item.classList.add('active');
+      $('#page-' + item.dataset.page).classList.add('active');
+      if (item.dataset.page === 'manage') loadKeysTable();
+      closeMobileMenu();
+    };
+  });
+
+  // Mint key
+  $('#mintBtn').onclick = async () => {
+    const label = $('#mintLabel').value.trim();
+    if (!label) { toast('User label is required', 'err'); return; }
+    const amount = $('#mintAmount').value;
+    const unit   = $('#mintUnit').value;
+    const permissions = {
+      text:    $('#pText').checked,
+      image:   $('#pImage').checked,
+      cinema:  $('#pCinema').checked,
+      effects: $('#pEffects').checked,
+    };
+    try {
+      const r = await adminFetch('/api/admin/mint', {
+        method: 'POST',
+        body: JSON.stringify({ label, durationAmount: amount, durationUnit: unit, permissions }),
+      });
+      mintedKeyData = r;
+      $('#mintKeyCode').textContent = r.key;
+      const expText = r.entry.expiresAt ? `Expires: ${new Date(r.entry.expiresAt).toLocaleString()}` : 'Expiry: Never (Unlimited)';
+      const permText = Object.entries(r.entry.permissions).filter(([,v]) => v).map(([k]) => k).join(', ');
+      $('#mintKeyMeta').innerHTML = `<b>${expText}</b><br>Permissions: ${permText}`;
+      $('#mintResult').style.display = 'block';
+      toast('Credential created ✓', 'ok');
+      refreshOverview();
+      loadKeysTable();
+    } catch (e) { toast(e.message, 'err'); }
+  };
+
+  $('#copyKeyBtn').onclick = () => {
+    if (!mintedKeyData) return;
+    navigator.clipboard.writeText(mintedKeyData.key);
+    toast('Key copied to clipboard ✓', 'ok');
+  };
+
+  $('#copyJsonBtn').onclick = () => {
+    if (!mintedKeyData) return;
+    navigator.clipboard.writeText(JSON.stringify(mintedKeyData, null, 2));
+    toast('JSON copied ✓', 'ok');
+  };
+
+  // Verify key
+  $('#verifyBtn').onclick = async () => {
+    const key = $('#verifyInput').value.trim();
+    if (!key) { toast('Paste a key to verify', 'err'); return; }
+    try {
+      const r = await adminFetch('/api/admin/verify-key', { method: 'POST', body: JSON.stringify({ key }) });
+      const el = $('#verifyResult');
+      el.style.display = 'block';
+      if (r.valid) {
+        el.innerHTML = `<span style="color:var(--g-green);font-weight:500">✓ Valid Cryptographic Credential</span><br><span style="color:var(--g-text-secondary);font-size:13px">Label: <b style="color:var(--g-text)">${r.label}</b> | Status: <b>${r.status}</b></span>`;
+      } else {
+        el.innerHTML = `<span style="color:var(--g-red);font-weight:500">✗ Invalid credential (${r.reason || 'signature check failed'})</span>`;
+      }
+    } catch (e) { toast(e.message, 'err'); }
+  };
+  $('#verifyInput').onkeydown = (e) => { if (e.key === 'Enter') $('#verifyBtn').click(); };
+
+  // Auto-restore session
+  const saved = sessionStorage.getItem(SESSION_KEY);
+  if (saved) {
+    ADMIN_SECRET = saved;
+    authCheck(saved).then(ok => { if (ok) showDash(); else sessionStorage.removeItem(SESSION_KEY); });
+  }
+</script>
+</body>
+</html>
