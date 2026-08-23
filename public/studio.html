@@ -295,6 +295,254 @@
     .toast.ok { border-left-color: var(--green); }
     .toast.hide { display: none; }
 
+    /* ── OPTIONS PILLS (ASPECT RATIO & DURATION) ────────────────────── */
+    .opts {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .opt {
+      flex: 1;
+      min-width: 70px;
+      padding: 9px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: all var(--transition);
+    }
+
+    .opt:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .opt.on {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent-bright);
+      box-shadow: 0 0 0 1px var(--accent), var(--shadow-accent);
+      font-weight: 700;
+    }
+
+    /* ── UPLOAD DROPZONE ────────────────────────────────────────────── */
+    .drop {
+      border: 2px dashed var(--border-strong);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: all var(--transition);
+      margin-top: 6px;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .drop:hover, .drop.drag {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+
+    .drop .ico { font-size: 24px; }
+
+    .drop img {
+      max-height: 120px;
+      max-width: 100%;
+      border-radius: var(--radius-sm);
+      object-fit: contain;
+    }
+
+    /* ── WORKFLOWS & EFFECTS GRID ───────────────────────────────────── */
+    .wf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-top: 6px;
+    }
+
+    .wf {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all var(--transition);
+      aspect-ratio: 4/3;
+      position: relative;
+    }
+
+    .wf:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+    }
+
+    .wf.sel {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent), var(--shadow-accent);
+    }
+
+    .wf .cap {
+      position: absolute;
+      bottom: 0; inset-x: 0;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+      padding: 12px 6px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── FEATURED SCENE CARD ────────────────────────────────────────── */
+    .featured-card {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .featured-card:hover {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+    }
+
+    .featured-card.sel {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 1px var(--accent), var(--shadow-accent);
+    }
+
+    .featured-badge {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--amber);
+      background: var(--amber-soft);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .featured-media {
+      aspect-ratio: 16/9;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 10px;
+      background: #000;
+    }
+
+    .featured-info h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+
+    .featured-info p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .btn-sel {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-bright);
+      margin-top: 6px;
+    }
+
+    /* ── MODAL & GALLERY EMPTY STATE ────────────────────────────────── */
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .mbtn-primary, .mbtn-secondary {
+      flex: 1;
+      min-width: 90px;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: all var(--transition);
+      border: none;
+    }
+
+    .mbtn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .mbtn-primary:hover {
+      background: var(--accent-bright);
+    }
+
+    .mbtn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+    }
+
+    .mbtn-secondary:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-accent);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty .ico {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .empty .t {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .empty .s {
+      font-size: 12.5px;
+    }
+
     .hidden { display: none !important; }
     @keyframes fadeIn { from { opacity: 0; } }
   </style>
