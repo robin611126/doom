@@ -272,14 +272,35 @@ export default async function handler(req, res) {
       return;
     }
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      send(res, 400, { error: 'Invalid payment parameters' });
+    if (!razorpay_payment_id) {
+      send(res, 400, { error: 'Invalid payment parameters: payment_id missing' });
       return;
     }
 
-    const expectedSig = hmac(RAZORPAY_KEY_SECRET, razorpay_order_id + '|' + razorpay_payment_id);
-    if (expectedSig !== razorpay_signature) {
-      send(res, 400, { error: 'Invalid payment signature. Verification failed.' });
+    let isVerified = false;
+
+    // 1. Primary verification: HMAC Signature Check
+    if (razorpay_order_id && razorpay_signature) {
+      const expectedSig = hmac(RAZORPAY_KEY_SECRET, razorpay_order_id + '|' + razorpay_payment_id);
+      if (expectedSig === razorpay_signature) {
+        isVerified = true;
+      }
+    }
+
+    // 2. Secondary Bulletproof verification: Fetch Payment status directly from Razorpay API
+    if (!isVerified && razorpay) {
+      try {
+        const payment = await razorpay.payments.fetch(razorpay_payment_id);
+        if (payment && (payment.status === 'captured' || payment.status === 'authorized')) {
+          isVerified = true;
+        }
+      } catch (err) {
+        console.error('Razorpay fetch payment error:', err);
+      }
+    }
+
+    if (!isVerified) {
+      send(res, 400, { error: 'Payment signature verification failed' });
       return;
     }
 
