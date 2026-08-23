@@ -205,28 +205,60 @@ if ($('#signupSubmitBtn')) {
   };
 }
 
+function handleGoogleCredential(response) {
+  if (!response || !response.credential) return;
+  api('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ credential: response.credential }),
+  }).then((data) => {
+    TOKEN = data.token;
+    currentUser = data.user;
+    localStorage.setItem(TOKEN_KEY, TOKEN);
+    toast('✓ Signed in with Google! 50 credits active.', 'ok');
+    enterStudio();
+  }).catch((e) => {
+    toast(e.message, 'err');
+  });
+}
+window.handleGoogleCredential = handleGoogleCredential;
+
 if ($('#googleAuthBtn')) {
-  $('#googleAuthBtn').onclick = async () => {
-    const userEmail = prompt('Enter your Google Account Email to sign in / sign up:');
-    if (!userEmail || !userEmail.includes('@')) {
-      if (userEmail) toast('Valid email address required', 'err');
-      return;
-    }
-    const userName = userEmail.split('@')[0];
-    try {
-      const data = await api('/auth/google', {
-        method: 'POST',
-        body: JSON.stringify({ email: userEmail, name: userName }),
+  $('#googleAuthBtn').onclick = () => {
+    if (window.google && google.accounts && google.accounts.id) {
+      google.accounts.id.initialize({
+        client_id: window.GOOGLE_CLIENT_ID || '1081156296316-demo.apps.googleusercontent.com',
+        callback: handleGoogleCredential,
       });
-      TOKEN = data.token;
-      currentUser = data.user;
-      localStorage.setItem(TOKEN_KEY, TOKEN);
-      toast('✓ Signed in with Google! 50 credits active.', 'ok');
-      enterStudio();
-    } catch (e) {
-      toast(e.message, 'err');
+      google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          openGoogleEmailPrompt();
+        }
+      });
+    } else {
+      openGoogleEmailPrompt();
     }
   };
+}
+
+function openGoogleEmailPrompt() {
+  const userEmail = prompt('Enter your Google Account Email to sign in / sign up:');
+  if (!userEmail || !userEmail.includes('@')) {
+    if (userEmail) toast('Valid email address required', 'err');
+    return;
+  }
+  const userName = userEmail.split('@')[0];
+  api('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ email: userEmail, name: userName }),
+  }).then((data) => {
+    TOKEN = data.token;
+    currentUser = data.user;
+    localStorage.setItem(TOKEN_KEY, TOKEN);
+    toast('✓ Signed in with Google! 50 credits active.', 'ok');
+    enterStudio();
+  }).catch((e) => {
+    toast(e.message, 'err');
+  });
 }
 
 $('#enterBtn').onclick = () => {
