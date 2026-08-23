@@ -196,12 +196,6 @@ export default async function handler(req, res) {
       send(res, 400, { error: err.message });
     }
     return;
-  }   const result = await loginUser(req.body || {});
-      send(res, 200, result);
-    } catch (err) {
-      send(res, 400, { error: err.message });
-    }
-    return;
   }
 
   // ── PUBLIC CATALOG ENDPOINTS (NO KEY NEEDED FOR PREVIEW) ───────────────────
