@@ -11,6 +11,7 @@ import {
 import {
   signupUser,
   loginUser,
+  loginOrSignupWithGoogle,
   verifyUserToken,
   addPackageCredits,
   deductCredits,
@@ -20,7 +21,7 @@ import {
 } from '../lib/users.js';
 
 export const config = {
-  maxDuration: 60,
+  maxDuration: 10,
   api: { bodyParser: { sizeLimit: '12mb' } },
 };
 
@@ -161,6 +162,41 @@ export default async function handler(req, res) {
   if (m === 'POST' && matchPath('/auth/login')) {
     try {
       const result = await loginUser(req.body || {});
+      send(res, 200, result);
+    } catch (err) {
+      send(res, 400, { error: err.message });
+    }
+    return;
+  }
+
+  if (m === 'POST' && matchPath('/auth/google')) {
+    try {
+      const { credential, email, name } = req.body || {};
+      let userEmail = email;
+      let userName = name;
+
+      // Parse JWT payload from Google Credential token if present
+      if (credential && !userEmail) {
+        try {
+          const payloadB64 = credential.split('.')[1];
+          const payloadJson = Buffer.from(payloadB64, 'base64').toString('utf8');
+          const payload = JSON.parse(payloadJson);
+          userEmail = payload.email;
+          userName = payload.name || payload.given_name;
+        } catch (e) {
+          console.error('Failed to parse Google JWT payload:', e.message);
+        }
+      }
+
+      if (!userEmail) throw new Error('Could not retrieve email from Google Account');
+
+      const result = await loginOrSignupWithGoogle({ email: userEmail, name: userName });
+      send(res, 200, result);
+    } catch (err) {
+      send(res, 400, { error: err.message });
+    }
+    return;
+  }   const result = await loginUser(req.body || {});
       send(res, 200, result);
     } catch (err) {
       send(res, 400, { error: err.message });

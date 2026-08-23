@@ -205,6 +205,30 @@ if ($('#signupSubmitBtn')) {
   };
 }
 
+if ($('#googleAuthBtn')) {
+  $('#googleAuthBtn').onclick = async () => {
+    const userEmail = prompt('Enter your Google Account Email to sign in / sign up:');
+    if (!userEmail || !userEmail.includes('@')) {
+      if (userEmail) toast('Valid email address required', 'err');
+      return;
+    }
+    const userName = userEmail.split('@')[0];
+    try {
+      const data = await api('/auth/google', {
+        method: 'POST',
+        body: JSON.stringify({ email: userEmail, name: userName }),
+      });
+      TOKEN = data.token;
+      currentUser = data.user;
+      localStorage.setItem(TOKEN_KEY, TOKEN);
+      toast('✓ Signed in with Google! 50 credits active.', 'ok');
+      enterStudio();
+    } catch (e) {
+      toast(e.message, 'err');
+    }
+  };
+}
+
 $('#enterBtn').onclick = () => {
   const k = $('#keyInput').value.trim();
   if (!k.startsWith('master-')) { toast('Key must start with "master-"', 'err'); return; }
