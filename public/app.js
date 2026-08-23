@@ -1,9 +1,47 @@
-/* ── Neon Studio · app.js ─────────────────────────────────── */
+/* ── Doom AI Cinema Studio · app.js ─────────────────────────────────── */
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 
+const TOKEN_KEY = 'doom_token';
 const STORE_KEY = 'neon_key';
+
+let TOKEN = localStorage.getItem(TOKEN_KEY) || '';
 let KEY = localStorage.getItem(STORE_KEY) || '';
+let currentUser = null;
+
+// ── Pay-As-You-Go Model Rates (Credits per video) ─────────────────────────
+const MODEL_RATES = {
+  pixverse:    { default: 25, starter: 25, creator: 20, studio: 15 },
+  hailuo:      { default: 40, starter: 40, creator: 30, studio: 25 },
+  kling_pro:   { default: 50, starter: 50, creator: 40, studio: 30 },
+  grok:        { default: 50, starter: 50, creator: 40, studio: 30 },
+  wan:         { default: 100, starter: 100, creator: 75, studio: 55 },
+  veo_fast:    { default: 120, starter: 120, creator: 95, studio: 70 },
+  veo:         { default: 125, starter: 125, creator: 100, studio: 75 },
+  kling:       { default: 125, starter: 125, creator: 100, studio: 75 },
+  sora:        { default: 125, starter: 125, creator: 100, studio: 75 },
+  seedance:    { default: 140, starter: 140, creator: 100, studio: 75 },
+};
+
+function getModelCost(modelTitle = '') {
+  const m = String(modelTitle).toLowerCase();
+  const tier = currentUser?.plan || 'starter';
+  let rateKey = 'veo';
+
+  if (m.includes('pixverse')) rateKey = 'pixverse';
+  else if (m.includes('hailuo') || m.includes('minimax')) rateKey = 'hailuo';
+  else if (m.includes('kling') && m.includes('pro')) rateKey = 'kling_pro';
+  else if (m.includes('grok')) rateKey = 'grok';
+  else if (m.includes('wan')) rateKey = 'wan';
+  else if (m.includes('veo') && m.includes('fast')) rateKey = 'veo_fast';
+  else if (m.includes('veo')) rateKey = 'veo';
+  else if (m.includes('kling')) rateKey = 'kling';
+  else if (m.includes('sora')) rateKey = 'sora';
+  else if (m.includes('seedance')) rateKey = 'seedance';
+
+  const rates = MODEL_RATES[rateKey] || MODEL_RATES.veo;
+  return rates[tier] || rates.starter || rates.default;
+}
 
 // ── State ─────────────────────────────────────────────────────
 let models = { textToVideo: [], imageToVideo: [] };
@@ -18,8 +56,7 @@ let state = {
   imageModel: null, imageOpts: {}, imageSearch: '', imageB64: null,
   wf: null, wfInputs: {},
   eff: null, effB64: null,
-  page: 1, pageSize: 6,
-  activeModal: null,          // { url, prompt }
+  activeModal: null,
 };
 
 // Sample prompts
@@ -38,16 +75,16 @@ const IMG_SAMPLES = [
   'Cinematic steadycam forward movement, wind moves background elements.',
 ];
 
-// ── API helpers ───────────────────────────────────────────────
+// ── API helper ───────────────────────────────────────────────
 const api = async (path, opts = {}) => {
-  const res = await fetch('/api' + path, {
-    ...opts,
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': KEY,
-      ...(opts.headers || {}),
-    },
-  });
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(opts.headers || {}),
+  };
+  if (TOKEN) headers['Authorization'] = `Bearer ${TOKEN}`;
+  if (KEY) headers['x-api-key'] = KEY;
+
+  const res = await fetch('/api' + path, { ...opts, headers });
   const data = await res.json().catch(() => ({ error: 'Invalid server response' }));
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   return data;
@@ -62,21 +99,110 @@ const toast = (msg, type = '') => {
   setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 260); }, 3400);
 };
 
-// ── Auth ──────────────────────────────────────────────────────
+// ── Auth & Session Management ──────────────────────────────────
+async function initSession() {
+  if (TOKEN) {
+    try {
+      const data = await api('/auth/me');
+      currentUser = data.user;
+      enterStudio();
+      return;
+    } catch {
+      localStorage.removeItem(TOKEN_KEY);
+      TOKEN = '';
+    }
+  }
+  if (KEY) {
+    enterStudio();
+  }
+}
+
 function enterStudio() {
   $('#gate').classList.add('hidden');
   $('#app').classList.add('show');
-  $('#keyDisplay').textContent = KEY.slice(0, 22) + '…';
+  updateUserUI();
   loadAll();
   startPolling();
 }
 
+function updateUserUI() {
+  if (currentUser) {
+    const planName = currentUser.plan ? currentUser.plan.toUpperCase() : 'FREE';
+    $('#userDisplay').textContent = `${currentUser.email} (${currentUser.credits || 0}c)`;
+    $('#creditPill').textContent = `⚡ ${currentUser.credits || 0} credits`;
+    if ($('#tierBadge')) {
+      $('#tierBadge').textContent = `${planName} TIER`;
+      $('#tierBadge').style.display = 'inline-block';
+    }
+  } else if (KEY) {
+    $('#userDisplay').textContent = KEY.slice(0, 22) + '…';
+    if ($('#tierBadge')) $('#tierBadge').style.display = 'none';
+  }
+}
+
 function logout() {
+  localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(STORE_KEY);
+  TOKEN = '';
   KEY = '';
+  currentUser = null;
   clearInterval(pollTimer);
   pollTimer = null;
   location.reload();
+}
+
+// ── Auth Form Handlers ─────────────────────────────────────────
+if ($('#tabAuthLogin')) {
+  $('#tabAuthLogin').onclick = () => {
+    $('#tabAuthLogin').classList.add('active');
+    $('#tabAuthSignup').classList.remove('active');
+    $('#authTitle').textContent = 'Sign in to Doom AI';
+    $('#formAuthLogin').classList.remove('hidden');
+    $('#formAuthSignup').classList.add('hidden');
+  };
+  $('#tabAuthSignup').onclick = () => {
+    $('#tabAuthSignup').classList.add('active');
+    $('#tabAuthLogin').classList.remove('active');
+    $('#authTitle').textContent = 'Create Free Account';
+    $('#formAuthSignup').classList.remove('hidden');
+    $('#formAuthLogin').classList.add('hidden');
+  };
+}
+
+if ($('#loginSubmitBtn')) {
+  $('#loginSubmitBtn').onclick = async () => {
+    const email = $('#loginEmail').value.trim();
+    const password = $('#loginPass').value.trim();
+    if (!email || !password) { toast('Email and password required', 'err'); return; }
+    try {
+      const data = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+      TOKEN = data.token;
+      currentUser = data.user;
+      localStorage.setItem(TOKEN_KEY, TOKEN);
+      toast('✓ Welcome back!', 'ok');
+      enterStudio();
+    } catch (e) {
+      toast(e.message, 'err');
+    }
+  };
+}
+
+if ($('#signupSubmitBtn')) {
+  $('#signupSubmitBtn').onclick = async () => {
+    const email = $('#signupEmail').value.trim();
+    const password = $('#signupPass').value.trim();
+    if (!email || !password) { toast('Email and password required', 'err'); return; }
+    try {
+      const data = await api('/auth/signup', { method: 'POST', body: JSON.stringify({ email, password }) });
+      TOKEN = data.token;
+      currentUser = data.user;
+      localStorage.setItem(TOKEN_KEY, TOKEN);
+      toast('✓ Account created! 50 bonus credits added.', 'ok');
+      enterStudio();
+    } catch (e) {
+      toast(e.message, 'err');
+    }
+  };
 }
 
 $('#enterBtn').onclick = () => {
@@ -89,13 +215,7 @@ $('#enterBtn').onclick = () => {
 $('#keyInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#enterBtn').click(); });
 $('#logoutBtn').onclick = logout;
 
-$('#copyKeyBtn').onclick = () => {
-  if (!KEY) return;
-  navigator.clipboard.writeText(KEY);
-  toast('Key copied ✓', 'ok');
-};
-
-// ── Load catalog ──────────────────────────────────────────────
+// ── Load Catalog ──────────────────────────────────────────────
 async function loadAll() {
   try {
     const [m, w, e] = await Promise.all([
@@ -134,10 +254,10 @@ function getMediaHtml(item) {
     ></video>`;
   }
   if (img) return `<img src="${img}" referrerpolicy="no-referrer" loading="lazy" style="width:100%;height:100%;object-fit:cover">`;
-  return `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1f1f38,#111122);display:grid;place-items:center;color:var(--accent);font-size:22px">🎬</div>`;
+  return `<div style="width:100%;height:100%;background:var(--surface);display:grid;place-items:center;color:var(--accent);font-size:22px">🎬</div>`;
 }
 
-// ── Model list ────────────────────────────────────────────────
+// ── Model List Render ──────────────────────────────────────────
 function renderModels(kind) {
   const raw = kind === 'text' ? (models.textToVideo || []) : (models.imageToVideo || []);
   const query = (kind === 'text' ? state.textSearch : state.imageSearch).toLowerCase();
@@ -146,7 +266,7 @@ function renderModels(kind) {
   el.innerHTML = '';
 
   if (!list.length) {
-    el.innerHTML = `<div style="padding:18px;text-align:center;color:var(--muted);font-size:13px">No models found</div>`;
+    el.innerHTML = `<div style="padding:18px;text-align:center;color:var(--text-muted);font-size:13px">No models found</div>`;
     return;
   }
 
@@ -156,8 +276,7 @@ function renderModels(kind) {
     const curSel = kind === 'text' ? state.textModel : state.imageModel;
     if (curSel?.workflow_name === m.workflow_name) card.classList.add('sel');
 
-    const costs = m.costs ? Object.values(m.costs).flatMap((q) => Object.values(q)) : [];
-    const minCost = costs.length ? Math.min(...costs) : '?';
+    const cost = getModelCost(m.title || m.workflow_name);
     const icon = m.icon || '';
 
     card.innerHTML = `
@@ -166,7 +285,7 @@ function renderModels(kind) {
         <div class="t"><span class="chk">✓</span>${m.title}</div>
         <div class="s">${m.subtitle || ''}</div>
       </div>
-      <div class="cost">${minCost}c</div>`;
+      <div class="cost">${cost}c</div>`;
 
     card.onclick = () => {
       if (kind === 'text') { state.textModel = m; state.textOpts = {}; }
@@ -198,11 +317,6 @@ function renderOptions(kind) {
     html += `<label>Duration</label><div class="opts">${inp.duration_options.map((d) =>
       `<div class="opt ${opts.duration === d ? 'on' : ''}" data-k="duration" data-v="${d}">${d}s</div>`).join('')}</div>`;
   }
-  if (inp.quality_options) {
-    opts.quality = opts.quality || inp.quality_options[0];
-    html += `<label>Quality</label><div class="opts">${inp.quality_options.map((q) =>
-      `<div class="opt ${opts.quality === q ? 'on' : ''}" data-k="quality" data-v="${q}">${q}</div>`).join('')}</div>`;
-  }
 
   cont.innerHTML = html;
   cont.querySelectorAll('.opt').forEach((o) => o.onclick = () => {
@@ -211,7 +325,7 @@ function renderOptions(kind) {
   });
 }
 
-// ── Workflows (Cinema) ────────────────────────────────────────
+// ── Workflows & Effects ────────────────────────────────────────
 function renderWorkflows() {
   const featCont = $('#featuredScene');
   const grid = $('#wfGrid');
@@ -237,7 +351,6 @@ function renderWorkflows() {
     fc.onclick = () => {
       state.wf = featured; state.wfInputs = {};
       grid.querySelectorAll('.wf').forEach((x) => x.classList.remove('sel'));
-      document.querySelectorAll('.featured-card').forEach((x) => x.classList.remove('sel'));
       fc.classList.add('sel');
       renderCinOpts();
     };
@@ -252,7 +365,7 @@ function renderWorkflows() {
     el.onclick = () => {
       state.wf = w; state.wfInputs = {};
       grid.querySelectorAll('.wf').forEach((x) => x.classList.remove('sel'));
-      document.querySelectorAll('.featured-card').forEach((x) => x.classList.remove('sel'));
+      if (featCont.firstElementChild) featCont.firstElementChild.classList.remove('sel');
       el.classList.add('sel');
       renderCinOpts();
     };
@@ -289,7 +402,6 @@ function renderCinOpts() {
   }
 }
 
-// ── Effects ───────────────────────────────────────────────────
 function renderEffects() {
   const grid = $('#effGrid');
   grid.innerHTML = '';
@@ -308,7 +420,6 @@ function renderEffects() {
   });
 }
 
-// ── File drop ─────────────────────────────────────────────────
 function setupDrop(el, cb) {
   const inp = document.createElement('input');
   inp.type = 'file'; inp.accept = 'image/*'; inp.style.display = 'none';
@@ -333,7 +444,6 @@ function fileToB64(file, cb, el) {
   r.readAsDataURL(file);
 }
 
-// ── Upload image ──────────────────────────────────────────────
 async function uploadImage(b64) {
   if (!b64) return null;
   const r = await api('/upload', { method: 'POST', body: JSON.stringify({ base64Image: b64 }) });
@@ -385,9 +495,14 @@ async function generate() {
     }
 
     btn.innerHTML = '⏳ Queueing generation…';
-    await api('/generate', { method: 'POST', body: JSON.stringify(body) });
+    const res = await api('/generate', { method: 'POST', body: JSON.stringify(body) });
     toast('✓ Video generation queued!', 'ok');
-    state.page = 1;
+    
+    // Refresh user credits if returned
+    if (currentUser && res.creditCostDeducted) {
+      currentUser.credits = Math.max(0, (currentUser.credits || 0) - res.creditCostDeducted);
+      updateUserUI();
+    }
     fetchWorks();
   } catch (e) {
     toast(e.message, 'err');
@@ -397,11 +512,16 @@ async function generate() {
   }
 }
 
-// ── Works / gallery ───────────────────────────────────────────
+// ── Works / Gallery ───────────────────────────────────────────
 async function fetchWorks() {
   try {
     const r = await api('/works');
-    $('#creditPill').textContent = `⚡ ${(r.credit || 0).toFixed(2)} credits`;
+    if (r.credit !== undefined && currentUser) {
+      currentUser.credits = r.credit;
+      updateUserUI();
+    } else if (r.credit !== undefined) {
+      $('#creditPill').textContent = `⚡ ${(r.credit || 0).toFixed(0)} credits`;
+    }
     const works = r.works || [];
     const sig = JSON.stringify(works.map((w) => w.status + w.link));
     if (sig !== fetchWorks._last) { fetchWorks._last = sig; renderGallery(works); lastWorks = works; }
@@ -412,8 +532,7 @@ fetchWorks._last = '';
 function renderGallery(works) {
   const g = $('#gallery');
   const empty = $('#emptyState');
-  const pag = $('#pagination');
-  pag.innerHTML = '';
+  if ($('#pagination')) $('#pagination').innerHTML = '';
 
   if (!works.length) {
     g.innerHTML = '';
@@ -453,13 +572,11 @@ function renderGallery(works) {
   });
 }
 
-// ── Polling ───────────────────────────────────────────────────
 function startPolling() {
   fetchWorks();
   pollTimer = setInterval(fetchWorks, 8000);
 }
 
-// ── Video Modal ───────────────────────────────────────────────
 function openModal(url, prompt) {
   state.activeModal = { url, prompt };
   $('#modalVideo').src = url;
@@ -492,7 +609,6 @@ $('#modalCopyPrompt').onclick = () => {
   if (state.activeModal?.prompt) { navigator.clipboard.writeText(state.activeModal.prompt); toast('Prompt copied ✓', 'ok'); }
 };
 
-// ── Tabs ──────────────────────────────────────────────────────
 $$('.tab').forEach((t) => t.onclick = () => {
   $$('.tab').forEach((x) => x.classList.remove('active'));
   t.classList.add('active');
@@ -502,21 +618,17 @@ $$('.tab').forEach((t) => t.onclick = () => {
   );
 });
 
-// ── Search ────────────────────────────────────────────────────
 $('#textModelSearch').oninput = (e) => { state.textSearch = e.target.value; renderModels('text'); };
 $('#imageModelSearch').oninput = (e) => { state.imageSearch = e.target.value; renderModels('image'); };
 
-// ── Samples ───────────────────────────────────────────────────
 $('#randTextBtn').onclick = () => { $('#textPrompt').value = TEXT_SAMPLES[Math.floor(Math.random() * TEXT_SAMPLES.length)]; };
 $('#randImgBtn').onclick = () => { $('#imgPrompt').value = IMG_SAMPLES[Math.floor(Math.random() * IMG_SAMPLES.length)]; };
 
-// ── Buttons ───────────────────────────────────────────────────
 $('#genBtn').onclick = generate;
 $('#refreshBtn').onclick = () => { fetchWorks._last = ''; fetchWorks(); toast('Gallery refreshed', 'ok'); };
 
-// ── File drops ────────────────────────────────────────────────
 setupDrop($('#imgDrop'), (b64) => { state.imageB64 = b64; });
 setupDrop($('#effDrop'), (b64) => { state.effB64 = b64; });
 
-// ── Auto-login if key saved ───────────────────────────────────
-if (KEY) enterStudio();
+// Initialize Auth & Session on page start
+initSession();

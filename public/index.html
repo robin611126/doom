@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Doom AI — Unlimited AI Video Generation Platform</title>
-  <meta name="description" content="Generate unlimited AI videos with every major model — Sora, Veo, Kling, Runway, Pixverse and more. One subscription, unlimited generations.">
+  <title>Doom AI — AI Video Generation from ₹149</title>
+  <meta name="description" content="AI Video Generation from ₹149. No subscription. Pay only for what you generate. Veo, Kling, Sora, Seedance, Pixverse, Wan, Hailuo, Grok.">
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="apple-touch-icon" href="/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,9 +51,7 @@
     /* ── NAV ───────────────────────────────────────────── */
     nav {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 100;
       height: 64px;
       display: flex;
@@ -74,8 +72,7 @@
     }
 
     .nav-logo img {
-      width: 32px;
-      height: 32px;
+      width: 32px; height: 32px;
       filter: brightness(0) invert(1);
       opacity: 0.95;
     }
@@ -122,7 +119,7 @@
 
     /* ── HERO ──────────────────────────────────────────── */
     .hero {
-      min-height: 100vh;
+      min-height: 90vh;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -136,11 +133,9 @@
     .hero::before {
       content: '';
       position: absolute;
-      top: -200px;
-      left: 50%;
+      top: -200px; left: 50%;
       transform: translateX(-50%);
-      width: 800px;
-      height: 800px;
+      width: 800px; height: 800px;
       background: radial-gradient(circle, rgba(220,38,38,0.08) 0%, transparent 70%);
       pointer-events: none;
     }
@@ -157,32 +152,23 @@
       font-weight: 600;
       color: var(--text-secondary);
       margin-bottom: 28px;
-      animation: fadeUp 0.6s ease;
     }
 
     .hero-badge .pulse {
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--green);
       box-shadow: 0 0 8px rgba(34,197,94,0.5);
-      animation: blink 2s ease-in-out infinite;
-    }
-
-    @keyframes blink {
-      0%,100% { opacity: 1; }
-      50% { opacity: 0.4; }
     }
 
     .hero h1 {
       font-family: var(--font-display);
-      font-size: clamp(40px, 6vw, 72px);
+      font-size: clamp(36px, 5.5vw, 68px);
       font-weight: 800;
       letter-spacing: -2px;
       line-height: 1.05;
-      max-width: 800px;
+      max-width: 860px;
       color: var(--white);
-      animation: fadeUp 0.6s ease 0.1s both;
     }
 
     .hero h1 em {
@@ -196,17 +182,15 @@
     .hero-sub {
       font-size: clamp(15px, 2vw, 18px);
       color: var(--text-muted);
-      max-width: 560px;
+      max-width: 600px;
       margin-top: 20px;
       line-height: 1.6;
-      animation: fadeUp 0.6s ease 0.2s both;
     }
 
     .hero-actions {
       display: flex;
       gap: 12px;
       margin-top: 36px;
-      animation: fadeUp 0.6s ease 0.3s both;
     }
 
     .btn-primary {
@@ -246,11 +230,6 @@
     }
 
     .btn-secondary:hover { background: var(--surface-hover); border-color: rgba(255,255,255,0.15); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
 
     /* ── MODELS MARQUEE ───────────────────────────────── */
     .models-strip {
@@ -343,141 +322,23 @@
     }
 
     .feature-icon {
-      width: 44px;
-      height: 44px;
+      width: 44px; height: 44px;
       border-radius: var(--radius);
       background: var(--accent-soft);
-      display: grid;
-      place-items: center;
-      font-size: 20px;
-      margin-bottom: 16px;
+      display: grid; place-items: center;
+      font-size: 20px; margin-bottom: 16px;
     }
 
     .feature-card h4 {
       font-family: var(--font-display);
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--white);
-      margin-bottom: 6px;
+      font-size: 17px; font-weight: 700;
+      color: var(--white); margin-bottom: 6px;
     }
 
     .feature-card p {
       font-size: 13.5px;
       color: var(--text-muted);
       line-height: 1.55;
-    }
-
-    /* ── HOW IT WORKS ──────────────────────────────────── */
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 24px;
-      counter-reset: step;
-    }
-
-    .step {
-      text-align: center;
-      padding: 24px 16px;
-    }
-
-    .step::before {
-      counter-increment: step;
-      content: counter(step);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-family: var(--font-display);
-      font-size: 16px;
-      font-weight: 800;
-      margin-bottom: 16px;
-    }
-
-    .step h4 {
-      font-family: var(--font-display);
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--white);
-      margin-bottom: 6px;
-    }
-
-    .step p {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    /* ── STATS BAR ─────────────────────────────────────── */
-    .stats-bar {
-      display: flex;
-      justify-content: center;
-      gap: 48px;
-      flex-wrap: wrap;
-      padding: 48px 24px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      margin: 0 auto;
-      max-width: 900px;
-    }
-
-    .stat {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-family: var(--font-display);
-      font-size: 36px;
-      font-weight: 800;
-      color: var(--white);
-      letter-spacing: -1px;
-    }
-
-    .stat-label {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* ── CTA SECTION ───────────────────────────────────── */
-    .cta-section {
-      text-align: center;
-      padding: 100px 24px;
-      position: relative;
-    }
-
-    .cta-section::before {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 600px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(220,38,38,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .cta-section h2 {
-      font-family: var(--font-display);
-      font-size: clamp(28px, 4vw, 40px);
-      font-weight: 800;
-      letter-spacing: -1px;
-      color: var(--white);
-      margin-bottom: 14px;
-    }
-
-    .cta-section p {
-      font-size: 16px;
-      color: var(--text-muted);
-      margin-bottom: 32px;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.6;
     }
 
     /* ── FOOTER ─────────────────────────────────────────── */
@@ -493,56 +354,20 @@
       gap: 16px;
     }
 
-    .footer-brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .footer-brand img {
-      width: 24px;
-      height: 24px;
-      filter: brightness(0) invert(1);
-      opacity: 0.5;
-    }
-
-    .footer-brand span {
-      font-family: var(--font-display);
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-faint);
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 24px;
-    }
-
-    .footer-links a {
-      font-size: 13px;
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color var(--transition);
-    }
-
+    .footer-brand { display: flex; align-items: center; gap: 8px; }
+    .footer-brand img { width: 24px; height: 24px; filter: brightness(0) invert(1); opacity: 0.5; }
+    .footer-brand span { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text-faint); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; }
     .footer-links a:hover { color: var(--text); }
+    .footer-copy { font-size: 12px; color: var(--text-faint); width: 100%; text-align: center; margin-top: 16px; }
 
-    .footer-copy {
-      font-size: 12px;
-      color: var(--text-faint);
-      width: 100%;
-      text-align: center;
-      margin-top: 16px;
-    }
-
-    /* ── RESPONSIVE ─────────────────────────────────────── */
     @media (max-width: 768px) {
       nav { padding: 0 16px; }
       .nav-link { display: none; }
       .hero { padding: 100px 16px 60px; }
       .hero-actions { flex-direction: column; width: 100%; max-width: 320px; }
       .btn-primary, .btn-secondary { justify-content: center; }
-      .stats-bar { gap: 32px; }
       footer { justify-content: center; text-align: center; }
       .footer-links { justify-content: center; }
     }
@@ -573,122 +398,56 @@
   <section class="hero">
     <div class="hero-badge">
       <span class="pulse"></span>
-      All AI models available · Unlimited generations
+      Pay-As-You-Go · Starting at ₹149
     </div>
-    <h1>Generate <em>Unlimited</em> AI Videos</h1>
+    <h1>AI Video Generation <em>from ₹149</em></h1>
     <p class="hero-sub">
-      One platform, every major AI video model. Create cinematic content with Sora, Veo, Kling, Runway, Pixverse and more — no per-video limits.
+      Veo • Kling • Sora • Seedance • PixVerse • Wan • Hailuo • Grok.
+      <br><strong>No subscription. Pay only for what you generate.</strong>
     </p>
     <div class="hero-actions">
-      <a href="/studio" class="btn-primary">🎬 Open Studio</a>
-      <a href="/pricing" class="btn-secondary">View Pricing</a>
+      <a href="/studio" class="btn-primary">🎬 Launch Studio</a>
+      <a href="/pricing" class="btn-secondary">View Credit Packages</a>
     </div>
   </section>
 
   <!-- SUPPORTED MODELS -->
   <div class="models-strip">
-    <h3>Supported AI Models</h3>
+    <h3>Available AI Models</h3>
     <div class="model-logos">
-      <span class="model-tag">Google Veo 3.1</span>
-      <span class="model-tag">OpenAI Sora</span>
-      <span class="model-tag">Kling v3</span>
-      <span class="model-tag">Runway Gen-4</span>
-      <span class="model-tag">Pixverse v6</span>
+      <span class="model-tag">Veo 3.1 & Veo Fast</span>
+      <span class="model-tag">Sora 2</span>
+      <span class="model-tag">Kling v3 & Kling 2.6 Pro</span>
       <span class="model-tag">Seedance 2.5</span>
-      <span class="model-tag">Kling 2.6 Pro</span>
-      <span class="model-tag">Wan AI</span>
-      <span class="model-tag">Hailuo MiniMax</span>
-      <span class="model-tag">Grok</span>
-      <span class="model-tag">LumaLabs</span>
-      <span class="model-tag">Pika Labs</span>
+      <span class="model-tag">PixVerse v6</span>
+      <span class="model-tag">Hailuo v2</span>
+      <span class="model-tag">Wan 2.7</span>
+      <span class="model-tag">Grok AI</span>
     </div>
   </div>
 
   <!-- FEATURES -->
   <section class="section">
-    <div class="section-label">Platform</div>
-    <h2 class="section-title">Why Doom AI</h2>
-    <p class="section-desc">Everything you need to generate professional AI video content, consolidated into a single powerful interface.</p>
+    <div class="section-label">Pay As You Go</div>
+    <h2 class="section-title">Why Creators Choose Doom</h2>
+    <p class="section-desc">Fair, transparent pricing with no monthly lock-in commitments.</p>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">♾️</div>
-        <h4>Unlimited Generations</h4>
-        <p>No per-video charges. Generate as many videos as you need with any model, any time. Your creativity is never throttled.</p>
+        <div class="feature-icon">💳</div>
+        <h4>No Monthly Subscriptions</h4>
+        <p>Buy credits starting at just ₹149. Use them at your own pace with 30 days validity across all packages.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h4>Tiered Model Discounts</h4>
+        <p>Unlock cheaper credit rates per generation on higher packages (e.g. PixVerse for 15c, Veo 3.1 for 75c).</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🎥</div>
         <h4>Every Major AI Model</h4>
-        <p>Access Sora, Veo, Kling, Runway, Pixverse, Seedance, and more — all from one unified studio interface.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🎬</div>
-        <h4>Cinema Templates</h4>
-        <p>Pre-built cinematic workflows with camera presets, motion controls, and professional effects to accelerate production.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🖼️</div>
-        <h4>Image-to-Video</h4>
-        <p>Transform any still image into dynamic motion video. Upload a photo and describe how it should move and animate.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">✨</div>
-        <h4>Visual Effects</h4>
-        <p>Apply cinematic effects, style transfers, and visual enhancements to elevate your content to professional quality.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h4>Instant Processing</h4>
-        <p>Videos are queued and processed in real-time. Watch your gallery update live as each generation completes.</p>
+        <p>Access Sora, Veo, Kling, Seedance, PixVerse, Wan, and Hailuo from one unified studio console.</p>
       </div>
     </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="section">
-    <div class="section-label">Workflow</div>
-    <h2 class="section-title">How It Works</h2>
-    <p class="section-desc">From idea to cinematic video in three simple steps.</p>
-    <div class="steps">
-      <div class="step">
-        <h4>Choose a Model</h4>
-        <p>Select from 12+ AI video models — each optimized for different styles and use cases.</p>
-      </div>
-      <div class="step">
-        <h4>Write Your Prompt</h4>
-        <p>Describe your vision in natural language or use our camera preset shortcuts for instant cinematic direction.</p>
-      </div>
-      <div class="step">
-        <h4>Generate & Download</h4>
-        <p>Hit generate and watch your video appear in seconds. Download in full quality, re-generate, or refine.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- STATS -->
-  <div class="stats-bar">
-    <div class="stat">
-      <div class="stat-value">12+</div>
-      <div class="stat-label">AI Models</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">∞</div>
-      <div class="stat-label">Generations</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">4K</div>
-      <div class="stat-label">Max Resolution</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">24/7</div>
-      <div class="stat-label">Availability</div>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <section class="cta-section">
-    <h2>Ready to Create?</h2>
-    <p>Start generating unlimited AI videos today. No restrictions, no per-video fees.</p>
-    <a href="/studio" class="btn-primary">🎬 Launch Studio</a>
   </section>
 
   <!-- FOOTER -->

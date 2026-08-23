@@ -4,13 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pricing — Doom AI</title>
-  <meta name="description" content="Simple, transparent pricing for unlimited AI video generation. Choose the plan that fits your creative needs.">
+  <title>Pay-As-You-Go Pricing — Doom AI</title>
+  <meta name="description" content="AI Video Generation from ₹149 — No subscription. Pay only for what you generate. Veo, Kling, Sora, Seedance, Pixverse, Wan, Hailuo, Grok.">
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="apple-touch-icon" href="/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
     :root {
       --bg: #09090b;
@@ -28,9 +29,10 @@
       --text-muted: #71717a;
       --text-faint: #52525b;
       --green: #22c55e;
-      --green-soft: rgba(34,197,94,0.10);
+      --amber: #f59e0b;
       --font: 'Inter', system-ui, -apple-system, sans-serif;
       --font-display: 'Space Grotesk', var(--font);
+      --font-mono: 'JetBrains Mono', monospace;
       --transition: 150ms cubic-bezier(0.4,0,0.2,1);
       --radius: 12px;
       --radius-lg: 16px;
@@ -53,9 +55,7 @@
     /* ── NAV ───────────────────────────────────────────── */
     nav {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 100;
       height: 64px;
       display: flex;
@@ -76,8 +76,7 @@
     }
 
     .nav-logo img {
-      width: 32px;
-      height: 32px;
+      width: 32px; height: 32px;
       filter: brightness(0) invert(1);
       opacity: 0.95;
     }
@@ -126,78 +125,52 @@
     /* ── HEADER ─────────────────────────────────────────── */
     .page-header {
       text-align: center;
-      padding: 120px 24px 60px;
+      padding: 120px 24px 40px;
       position: relative;
     }
 
     .page-header::before {
       content: '';
       position: absolute;
-      top: -100px;
-      left: 50%;
+      top: -100px; left: 50%;
       transform: translateX(-50%);
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(220,38,38,0.06) 0%, transparent 70%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(220,38,38,0.08) 0%, transparent 70%);
       pointer-events: none;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(220,38,38,0.25);
+      color: var(--accent-bright);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
     }
 
     .page-header h1 {
       font-family: var(--font-display);
-      font-size: clamp(32px, 5vw, 48px);
+      font-size: clamp(32px, 5vw, 52px);
       font-weight: 800;
       letter-spacing: -1.5px;
       color: var(--white);
       margin-bottom: 12px;
+      line-height: 1.1;
     }
 
     .page-header p {
       font-size: 16px;
       color: var(--text-muted);
-      max-width: 480px;
+      max-width: 540px;
       margin: 0 auto;
       line-height: 1.6;
-    }
-
-    /* ── TOGGLE ─────────────────────────────────────────── */
-    .billing-toggle {
-      display: flex;
-      justify-content: center;
-      gap: 4px;
-      margin: 32px auto 48px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-full);
-      padding: 4px;
-      width: fit-content;
-    }
-
-    .toggle-btn {
-      padding: 8px 20px;
-      border: none;
-      border-radius: var(--radius-full);
-      font-size: 13px;
-      font-weight: 600;
-      font-family: var(--font);
-      color: var(--text-muted);
-      background: none;
-      cursor: pointer;
-      transition: all var(--transition);
-    }
-
-    .toggle-btn.active {
-      background: var(--white);
-      color: #09090b;
-    }
-
-    .save-badge {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--green);
-      background: var(--green-soft);
-      padding: 2px 8px;
-      border-radius: var(--radius-full);
-      margin-left: 6px;
     }
 
     /* ── PRICING CARDS ─────────────────────────────────── */
@@ -205,8 +178,8 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
-      max-width: 1020px;
-      margin: 0 auto;
+      max-width: 1040px;
+      margin: 32px auto 60px;
       padding: 0 24px;
     }
 
@@ -214,9 +187,11 @@
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
-      padding: 36px 28px;
+      padding: 32px 26px;
       position: relative;
       transition: all var(--transition);
+      display: flex;
+      flex-direction: column;
     }
 
     .price-card:hover {
@@ -226,7 +201,7 @@
 
     .price-card.featured {
       border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent), 0 12px 40px rgba(220,38,38,0.12);
+      box-shadow: 0 0 0 1px var(--accent), 0 12px 40px rgba(220,38,38,0.14);
     }
 
     .popular-badge {
@@ -246,17 +221,20 @@
 
     .price-card .plan-name {
       font-family: var(--font-display);
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 22px;
+      font-weight: 800;
       color: var(--white);
       margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .price-card .plan-desc {
       font-size: 13px;
       color: var(--text-muted);
       margin-bottom: 20px;
-      line-height: 1.5;
+      line-height: 1.4;
     }
 
     .price-amount {
@@ -267,30 +245,48 @@
     }
 
     .price-amount .currency {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 22px;
+      font-weight: 800;
       color: var(--text-secondary);
     }
 
     .price-amount .value {
       font-family: var(--font-display);
-      font-size: 48px;
+      font-size: 44px;
       font-weight: 800;
       color: var(--white);
-      letter-spacing: -2px;
+      letter-spacing: -1.5px;
       line-height: 1;
     }
 
     .price-amount .period {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-muted);
-      font-weight: 500;
+      font-weight: 600;
     }
 
-    .price-note {
-      font-size: 12px;
-      color: var(--text-faint);
-      margin-bottom: 24px;
+    .credits-highlight {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .credits-highlight .val {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .credits-highlight .lbl {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
     }
 
     .price-cta {
@@ -329,13 +325,14 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      margin-top: auto;
     }
 
     .plan-features li {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      font-size: 13.5px;
+      font-size: 13px;
       color: var(--text-secondary);
       line-height: 1.4;
     }
@@ -344,106 +341,89 @@
       color: var(--green);
       font-size: 14px;
       flex-shrink: 0;
-      margin-top: 1px;
     }
 
-    .plan-features li.dimmed {
-      color: var(--text-faint);
+    /* ── MODEL RATE TABLE ─────────────────────────────────── */
+    .rates-section {
+      max-width: 1040px;
+      margin: 40px auto 80px;
+      padding: 0 24px;
     }
 
-    .plan-features li.dimmed .check {
-      color: var(--text-faint);
-    }
-
-    /* ── FAQ ────────────────────────────────────────────── */
-    .faq-section {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 80px 24px 40px;
-    }
-
-    .faq-section h2 {
+    .rates-section h2 {
       font-family: var(--font-display);
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 800;
       color: var(--white);
       text-align: center;
-      margin-bottom: 36px;
-      letter-spacing: -0.5px;
+      margin-bottom: 8px;
     }
 
-    .faq-item {
+    .rates-section p {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .table-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow-x: auto;
+    }
+
+    table.rates-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    table.rates-table th {
+      background: var(--surface);
+      padding: 14px 18px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
       border-bottom: 1px solid var(--border);
-      padding: 18px 0;
     }
 
-    .faq-q {
-      font-size: 15px;
-      font-weight: 600;
+    table.rates-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
       color: var(--text);
-      cursor: pointer;
+    }
+
+    table.rates-table tr:last-child td { border-bottom: none; }
+    table.rates-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .tag-model {
+      font-weight: 700;
+      color: var(--white);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      transition: color var(--transition);
-    }
-
-    .faq-q:hover { color: var(--white); }
-
-    .faq-q .arrow {
-      font-size: 12px;
-      color: var(--text-muted);
-      transition: transform var(--transition);
-      flex-shrink: 0;
-    }
-
-    .faq-item.open .faq-q .arrow { transform: rotate(180deg); }
-
-    .faq-a {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.6;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease, margin 0.3s ease;
-    }
-
-    .faq-item.open .faq-a {
-      max-height: 200px;
-      margin-top: 10px;
-    }
-
-    /* ── CTA ────────────────────────────────────────────── */
-    .bottom-cta {
-      text-align: center;
-      padding: 60px 24px 100px;
-    }
-
-    .bottom-cta p {
-      font-size: 15px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
       gap: 8px;
-      padding: 14px 28px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: var(--font);
-      border: none;
-      border-radius: var(--radius);
-      cursor: pointer;
-      text-decoration: none;
-      transition: all var(--transition);
     }
 
-    .btn-primary:hover { background: var(--accent-bright); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(220,38,38,0.25); }
+    .credit-badge {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 12.5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .credit-badge.best {
+      color: var(--green);
+      background: rgba(34,197,94,0.1);
+      border-color: rgba(34,197,94,0.25);
+    }
 
     /* ── FOOTER ─────────────────────────────────────────── */
     footer {
@@ -465,8 +445,7 @@
     }
 
     .footer-brand img {
-      width: 24px;
-      height: 24px;
+      width: 24px; height: 24px;
       filter: brightness(0) invert(1);
       opacity: 0.5;
     }
@@ -478,27 +457,10 @@
       color: var(--text-faint);
     }
 
-    .footer-links {
-      display: flex;
-      gap: 24px;
-    }
-
-    .footer-links a {
-      font-size: 13px;
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color var(--transition);
-    }
-
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; }
     .footer-links a:hover { color: var(--text); }
-
-    .footer-copy {
-      font-size: 12px;
-      color: var(--text-faint);
-      width: 100%;
-      text-align: center;
-      margin-top: 16px;
-    }
+    .footer-copy { font-size: 12px; color: var(--text-faint); width: 100%; text-align: center; margin-top: 16px; }
 
     @media (max-width: 768px) {
       nav { padding: 0 16px; }
@@ -532,14 +494,9 @@
 
   <!-- HEADER -->
   <div class="page-header">
-    <h1>Simple, Transparent Pricing</h1>
-    <p>Every plan includes unlimited access to all AI video models. No hidden fees, no per-video charges.</p>
-  </div>
-
-  <!-- BILLING TOGGLE -->
-  <div class="billing-toggle" id="billingToggle">
-    <button class="toggle-btn active" data-billing="monthly">Monthly</button>
-    <button class="toggle-btn" data-billing="yearly">Yearly <span class="save-badge">Save 20%</span></button>
+    <div class="badge-pill">PAY ONLY FOR WHAT YOU GENERATE</div>
+    <h1>AI Video Generation from ₹149</h1>
+    <p>No monthly subscription. Choose a credit package that fits your creative needs with 30 days validity across all plans.</p>
   </div>
 
   <!-- PRICING CARDS -->
@@ -547,122 +504,155 @@
 
     <!-- STARTER -->
     <div class="price-card">
-      <div class="plan-name">Starter</div>
-      <div class="plan-desc">For individuals exploring AI video creation.</div>
+      <div class="plan-name">🟢 Starter</div>
+      <div class="plan-desc">Trying Doom AI for quick cinematic video clips.</div>
       <div class="price-amount">
-        <span class="currency">$</span>
-        <span class="value" data-monthly="29" data-yearly="23">29</span>
-        <span class="period">/month</span>
+        <span class="currency">₹</span>
+        <span class="value">149</span>
+        <span class="period">/ package</span>
       </div>
-      <div class="price-note" data-monthly="" data-yearly="Billed $276/year">​</div>
-      <a href="/studio" class="price-cta secondary">Get Started</a>
+      <div class="credits-highlight">
+        <span class="lbl">Credits Included</span>
+        <span class="val">⚡ 500 Credits</span>
+      </div>
+      <button class="price-cta secondary" onclick="buyPackage('starter')">Buy Starter Package →</button>
       <ul class="plan-features">
-        <li><span class="check">✓</span> Unlimited video generations</li>
-        <li><span class="check">✓</span> All AI models included</li>
-        <li><span class="check">✓</span> 720p & 1080p output</li>
-        <li><span class="check">✓</span> Text-to-video & image-to-video</li>
-        <li><span class="check">✓</span> Standard processing speed</li>
-        <li class="dimmed"><span class="check">—</span> Cinema templates</li>
-        <li class="dimmed"><span class="check">—</span> Priority queue</li>
+        <li><span class="check">✓</span> 500 Credits</li>
+        <li><span class="check">✓</span> 30 Days Validity</li>
+        <li><span class="check">✓</span> Standard Queue Speed</li>
+        <li><span class="check">✓</span> Access all 12+ AI Models</li>
+        <li><span class="check">✓</span> Approx. 20 PixVerse / 12 Veo / 10 Seedance clips</li>
       </ul>
     </div>
 
-    <!-- PRO -->
+    <!-- CREATOR -->
     <div class="price-card featured">
-      <div class="popular-badge">Most Popular</div>
-      <div class="plan-name">Pro</div>
-      <div class="plan-desc">For creators and professionals who need the full suite.</div>
+      <div class="popular-badge">🔥 MOST POPULAR</div>
+      <div class="plan-name">🔥 Creator</div>
+      <div class="plan-desc">For regular creators who need discounted model rates.</div>
       <div class="price-amount">
-        <span class="currency">$</span>
-        <span class="value" data-monthly="79" data-yearly="63">79</span>
-        <span class="period">/month</span>
+        <span class="currency">₹</span>
+        <span class="value">399</span>
+        <span class="period">/ package</span>
       </div>
-      <div class="price-note" data-monthly="" data-yearly="Billed $756/year">​</div>
-      <a href="/studio" class="price-cta primary">Get Started</a>
+      <div class="credits-highlight">
+        <span class="lbl">Credits Included</span>
+        <span class="val">⚡ 1,500 Credits</span>
+      </div>
+      <button class="price-cta primary" onclick="buyPackage('creator')">Buy Creator Package →</button>
       <ul class="plan-features">
-        <li><span class="check">✓</span> Unlimited video generations</li>
-        <li><span class="check">✓</span> All AI models included</li>
-        <li><span class="check">✓</span> Up to 4K output resolution</li>
-        <li><span class="check">✓</span> Text, image & cinema modes</li>
-        <li><span class="check">✓</span> Priority processing queue</li>
-        <li><span class="check">✓</span> All cinema templates & effects</li>
-        <li><span class="check">✓</span> Extended video duration (up to 60s)</li>
+        <li><span class="check">✓</span> 1,500 Credits</li>
+        <li><span class="check">✓</span> 30 Days Validity</li>
+        <li><span class="check">✓</span> Priority Processing Queue</li>
+        <li><span class="check">✓</span> Discounted Model Rates</li>
+        <li><span class="check">✓</span> Approx. 75 PixVerse / 15 Veo / 15 Seedance clips</li>
       </ul>
     </div>
 
-    <!-- ENTERPRISE -->
+    <!-- STUDIO -->
     <div class="price-card">
-      <div class="plan-name">Enterprise</div>
-      <div class="plan-desc">For teams and agencies with custom requirements.</div>
+      <div class="plan-name">🚀 Studio</div>
+      <div class="plan-desc">For heavy users and studios producing high volume.</div>
       <div class="price-amount">
-        <span class="currency">$</span>
-        <span class="value" data-monthly="249" data-yearly="199">249</span>
-        <span class="period">/month</span>
+        <span class="currency">₹</span>
+        <span class="value">999</span>
+        <span class="period">/ package</span>
       </div>
-      <div class="price-note" data-monthly="" data-yearly="Billed $2,388/year">​</div>
-      <a href="/studio" class="price-cta secondary">Contact Sales</a>
+      <div class="credits-highlight">
+        <span class="lbl">Credits Included</span>
+        <span class="val">⚡ 5,000 Credits</span>
+      </div>
+      <button class="price-cta secondary" onclick="buyPackage('studio')">Buy Studio Package →</button>
       <ul class="plan-features">
-        <li><span class="check">✓</span> Everything in Pro</li>
-        <li><span class="check">✓</span> Unlimited team members</li>
-        <li><span class="check">✓</span> API access for automation</li>
-        <li><span class="check">✓</span> Dedicated processing capacity</li>
-        <li><span class="check">✓</span> Custom model fine-tuning</li>
-        <li><span class="check">✓</span> Priority support & SLA</li>
-        <li><span class="check">✓</span> White-label option</li>
+        <li><span class="check">✓</span> 5,000 Credits</li>
+        <li><span class="check">✓</span> 30 Days Validity</li>
+        <li><span class="check">✓</span> Highest Priority Queue</li>
+        <li><span class="check">✓</span> Maximum Discounted Model Rates</li>
+        <li><span class="check">✓</span> Approx. 333 PixVerse / 66 Veo / 66 Seedance clips</li>
       </ul>
     </div>
 
   </div>
 
-  <!-- FAQ -->
-  <div class="faq-section">
-    <h2>Frequently Asked Questions</h2>
+  <!-- MODEL RATE BREAKDOWN TABLE -->
+  <div class="rates-section">
+    <h2>Detailed Model Rates</h2>
+    <p>Compare generation credit costs across package tiers:</p>
 
-    <div class="faq-item open">
-      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        What does "unlimited" mean exactly?
-        <span class="arrow">▼</span>
-      </div>
-      <div class="faq-a">There are no per-video charges or monthly generation caps. You can create as many videos as you want using any supported AI model. Processing is handled in a fair-use queue system.</div>
+    <div class="table-card">
+      <table class="rates-table">
+        <thead>
+          <tr>
+            <th>AI Model</th>
+            <th>Starter Rate (₹149)</th>
+            <th>Creator Rate (₹399)</th>
+            <th>Studio Rate (₹999)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tag-model">🎥 PixVerse v6</td>
+            <td><span class="credit-badge">25 credits</span></td>
+            <td><span class="credit-badge">20 credits</span></td>
+            <td><span class="credit-badge best">15 credits</span></td>
+          </tr>
+          <tr>
+            <td class="tag-model">🌊 Hailuo v2</td>
+            <td><span class="credit-badge">40 credits</span></td>
+            <td><span class="credit-badge">30 credits</span></td>
+            <td><span class="credit-badge best">25 credits</span></td>
+          </tr>
+          <tr>
+            <td class="tag-model">🎬 Kling 2.6 Pro</td>
+            <td><span class="credit-badge">50 credits</span></td>
+            <td><span class="credit-badge">40 credits</span></td>
+            <td><span class="credit-badge best">30 credits</span></td>
+          </tr>
+          <tr>
+            <td class="tag-model">⚡ Grok</td>
+            <td><span class="credit-badge">50 credits</span></td>
+            <td><span class="credit-badge">40 credits</span></td>
+            <td><span class="credit-badge best">30 credits</span></td>
+          </tr>
+          <tr>
+            <td class="tag-model">🌀 Wan 2.7</td>
+            <td><span class="credit-badge">100 credits</span></td>
+            <td><span class="credit-badge">75 credits</span></td>
+            <td><span class="credit-badge best">55 credits</span></td>
+          </tr>
+          <tr>
+            <td class="tag-model">⚡ Veo 3.1 Fast</td>
+            <td><span class="credit-badge">120 credits</span></td>
+            <td><span class="credit-badge">95 credits</span></td>
+            <td><span class="credit-badge best">70 credits</span></td>
+          </tr>
+          <tr>
+            <td class="tag-model">🌟 Veo 3.1</td>
+            <td><span class="credit-badge">125 credits</span></td>
+            <td><span class="credit-badge">100 credits</span></td>
+            <td><span class="credit-badge best">75 credits</span></td>
+          </tr>
+          <tr>
+            <td class="tag-model">🎥 Kling v3</td>
+            <td><span class="credit-badge">125 credits</span></td>
+            <td><span class="credit-badge">100 credits</span></td>
+            <td><span class="credit-badge best">75 credits</span></td>
+          </tr>
+          <tr>
+            <td class="tag-model">✨ Sora 2</td>
+            <td><span class="credit-badge">125 credits</span></td>
+            <td><span class="credit-badge">100 credits</span></td>
+            <td><span class="credit-badge best">75 credits</span></td>
+          </tr>
+          <tr>
+            <td class="tag-model">🔥 Seedance 2.5</td>
+            <td><span class="credit-badge">140 credits</span></td>
+            <td><span class="credit-badge">100 credits</span></td>
+            <td><span class="credit-badge best">75 credits</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        Which AI models are included?
-        <span class="arrow">▼</span>
-      </div>
-      <div class="faq-a">All plans include access to every model on the platform: Google Veo 3.1, OpenAI Sora, Kling v3, Runway Gen-4, Pixverse v6, Seedance 2.5, Hailuo MiniMax, Grok, LumaLabs, Pika, and more as they're added.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        Can I cancel anytime?
-        <span class="arrow">▼</span>
-      </div>
-      <div class="faq-a">Yes. All plans are cancel-anytime with no long-term commitment. If you cancel, you'll retain access until the end of your current billing period.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        What video formats and resolutions are supported?
-        <span class="arrow">▼</span>
-      </div>
-      <div class="faq-a">Videos are generated in MP4 format. Resolution depends on the model and your plan — Starter supports up to 1080p, while Pro and Enterprise unlock 4K output where the model supports it.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        Do I own the videos I generate?
-        <span class="arrow">▼</span>
-      </div>
-      <div class="faq-a">Yes. All generated content is yours to use commercially, for personal projects, or in any way you see fit. We don't claim rights over your creations.</div>
-    </div>
-  </div>
-
-  <!-- BOTTOM CTA -->
-  <div class="bottom-cta">
-    <p>Still have questions? Reach out or jump straight in.</p>
-    <a href="/studio" class="btn-primary">🎬 Launch Studio</a>
   </div>
 
   <!-- FOOTER -->
@@ -680,21 +670,65 @@
   </footer>
 
   <script>
-    // Billing toggle
-    const toggleBtns = document.querySelectorAll('.toggle-btn');
-    toggleBtns.forEach(btn => {
-      btn.onclick = () => {
-        toggleBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const billing = btn.dataset.billing;
-        document.querySelectorAll('.value[data-monthly]').forEach(el => {
-          el.textContent = el.dataset[billing];
+    async function buyPackage(packageId) {
+      const token = localStorage.getItem('doom_token');
+      if (!token) {
+        alert('Please sign in or launch the Studio to purchase credits.');
+        window.location.href = '/studio';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/payment/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ packageId }),
         });
-        document.querySelectorAll('.price-note[data-monthly]').forEach(el => {
-          el.textContent = el.dataset[billing] || '\u200B';
-        });
-      };
-    });
+        const order = await res.json();
+        if (!res.ok) throw new Error(order.error || 'Order creation failed');
+
+        if (order.isMock) {
+          // Instant test verification if no Razorpay production keys configured
+          const verifyRes = await fetch('/api/payment/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ packageId, isMock: true }),
+          });
+          const verifyData = await verifyRes.json();
+          alert(verifyData.message || 'Test payment successful! Credits added.');
+          window.location.href = '/studio';
+          return;
+        }
+
+        const options = {
+          key: order.key,
+          amount: order.amount,
+          currency: order.currency,
+          name: "Doom AI Video Studio",
+          description: `Credit Package Purchase (${packageId})`,
+          order_id: order.id,
+          handler: async function (response) {
+            const verifyRes = await fetch('/api/payment/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify({ ...response, packageId }),
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyRes.ok) {
+              alert('Payment Successful! Credits added to your account.');
+              window.location.href = '/studio';
+            } else {
+              alert(verifyData.error || 'Payment verification failed');
+            }
+          },
+          theme: { color: "#dc2626" }
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
   </script>
 
 </body>
