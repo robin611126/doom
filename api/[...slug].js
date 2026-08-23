@@ -37,12 +37,26 @@ const razorpay = (RAZORPAY_KEY_ID && RAZORPAY_KEY_SECRET)
   ? new Razorpay({ key_id: RAZORPAY_KEY_ID, key_secret: RAZORPAY_KEY_SECRET })
   : null;
 
-// Caches & Crypto
+// Caches & Crypto & Cookies
 const cache      = new Map();
 const registered = new Set();
 const sha256     = (s) => crypto.createHash('sha256').update(s).digest('hex');
 const hmac       = (k, d) => crypto.createHmac('sha256', k).update(d).digest('hex');
 const enc        = (s) => Buffer.from(s, 'utf8').toString('base64url');
+
+function parseCookies(header = '') {
+  const list = {};
+  if (!header) return list;
+  header.split(';').forEach((cookie) => {
+    const p = cookie.split('=');
+    if (p.length >= 2) list[p[0].trim()] = decodeURIComponent(p.slice(1).join('=').trim());
+  });
+  return list;
+}
+
+function setAuthCookie(res, token) {
+  res.setHeader('Set-Cookie', `doom_session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+}
 const dec        = (s) => Buffer.from(s, 'base64url').toString('utf8');
 
 function verifyKey(key) {
@@ -152,6 +166,7 @@ export default async function handler(req, res) {
   if (m === 'POST' && matchPath('/auth/signup')) {
     try {
       const result = await signupUser(req.body || {});
+      if (result?.token) setAuthCookie(res, result.token);
       send(res, 200, result);
     } catch (err) {
       send(res, 400, { error: err.message });
@@ -162,6 +177,7 @@ export default async function handler(req, res) {
   if (m === 'POST' && matchPath('/auth/login')) {
     try {
       const result = await loginUser(req.body || {});
+      if (result?.token) setAuthCookie(res, result.token);
       send(res, 200, result);
     } catch (err) {
       send(res, 400, { error: err.message });
@@ -191,10 +207,17 @@ export default async function handler(req, res) {
       if (!userEmail) throw new Error('Could not retrieve email from Google Account');
 
       const result = await loginOrSignupWithGoogle({ email: userEmail, name: userName });
+      if (result?.token) setAuthCookie(res, result.token);
       send(res, 200, result);
     } catch (err) {
       send(res, 400, { error: err.message });
     }
+    return;
+  }
+
+  if (m === 'POST' && matchPath('/auth/logout')) {
+    res.setHeader('Set-Cookie', 'doom_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+    send(res, 200, { ok: true });
     return;
   }
 
@@ -226,10 +249,17 @@ export default async function handler(req, res) {
 
   // ── AUTH & SESSION VERIFICATION FOR PROTECTED ENDPOINTS ─────────────────
   let userSession = null;
-  const authHeader = req.headers['authorization'] || '';
-  if (authHeader.startsWith('Bearer ')) {
-    const token = authHeader.slice(7).trim();
-    userSession = await verifyUserToken(token);
+  const cookies = parseCookies(req.headers.cookie || '');
+  if (cookies.doom_session) {
+    userSession = await verifyUserToken(cookies.doom_session);
+  }
+
+  if (!userSession) {
+    const authHeader = req.headers['authorization'] || '';
+    if (authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7).trim();
+      userSession = await verifyUserToken(token);
+    }
   }
 
   // Backwards-compatible API key header fallback

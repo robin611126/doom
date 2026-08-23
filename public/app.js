@@ -84,7 +84,7 @@ const api = async (path, opts = {}) => {
   if (TOKEN) headers['Authorization'] = `Bearer ${TOKEN}`;
   if (KEY) headers['x-api-key'] = KEY;
 
-  const res = await fetch('/api' + path, { ...opts, headers });
+  const res = await fetch('/api' + path, { credentials: 'same-origin', ...opts, headers });
   const data = await res.json().catch(() => ({ error: 'Invalid server response' }));
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   return data;
