@@ -246,12 +246,14 @@ export default async function handler(req, res) {
       const order = await razorpay.orders.create({
         amount: pkg.price * 100,
         currency: 'INR',
-        receipt: `receipt_${userSession.id}_${Date.now()}`,
-        notes: { userId: userSession.id, packageId: pkg.id },
+        receipt: `rcpt_${Date.now()}`,
+        notes: { userId: String(userSession.id), packageId: pkg.id },
       });
       send(res, 200, { ...order, key: RAZORPAY_KEY_ID, packageId: pkg.id });
     } catch (err) {
-      send(res, 500, { error: 'Failed to create Razorpay order: ' + err.message });
+      console.error('Razorpay Order Error:', err);
+      const errMsg = err?.description || err?.error?.description || err?.message || 'Invalid Razorpay key or order parameter';
+      send(res, 500, { error: 'Razorpay Error: ' + errMsg });
     }
     return;
   }
