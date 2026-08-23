@@ -101,6 +101,34 @@ const toast = (msg, type = '') => {
 
 // ── Auth & Session Management ──────────────────────────────────
 async function initSession() {
+  if (location.hash && location.hash.includes('access_token')) {
+    try {
+      const params = new URLSearchParams(location.hash.substring(1));
+      const accessToken = params.get('access_token');
+      if (accessToken) {
+        const res = await fetch('https://ouwucsjpnjnyjmpeayqb.supabase.co/auth/v1/user', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        const supaUser = await res.json();
+        if (supaUser && supaUser.email) {
+          const data = await api('/auth/google', {
+            method: 'POST',
+            body: JSON.stringify({ email: supaUser.email, name: supaUser.user_metadata?.full_name || '' }),
+          });
+          TOKEN = data.token;
+          currentUser = data.user;
+          localStorage.setItem(TOKEN_KEY, TOKEN);
+          history.replaceState(null, '', location.pathname);
+          toast('✓ Signed in with Google! 50 credits active.', 'ok');
+          enterStudio();
+          return;
+        }
+      }
+    } catch (e) {
+      console.error('Google OAuth callback error:', e);
+    }
+  }
+
   if (TOKEN) {
     try {
       const data = await api('/auth/me');
@@ -224,36 +252,9 @@ window.handleGoogleCredential = handleGoogleCredential;
 
 if ($('#googleAuthBtn')) {
   $('#googleAuthBtn').onclick = () => {
-    if ($('#formAuthGoogle')) {
-      $('#formAuthGoogle').classList.toggle('hidden');
-      if (!$('#formAuthGoogle').classList.contains('hidden') && $('#googleEmailInput')) {
-        $('#googleEmailInput').focus();
-      }
-    }
-  };
-}
-
-if ($('#googleEmailSubmitBtn')) {
-  $('#googleEmailSubmitBtn').onclick = async () => {
-    const email = $('#googleEmailInput').value.trim();
-    if (!email || !email.includes('@')) {
-      toast('Valid Google Account email required', 'err');
-      return;
-    }
-    const name = email.split('@')[0];
-    try {
-      const data = await api('/auth/google', {
-        method: 'POST',
-        body: JSON.stringify({ email, name }),
-      });
-      TOKEN = data.token;
-      currentUser = data.user;
-      localStorage.setItem(TOKEN_KEY, TOKEN);
-      toast('✓ Signed in with Google Account! 50 bonus credits.', 'ok');
-      enterStudio();
-    } catch (e) {
-      toast(e.message, 'err');
-    }
+    const supabaseUrl = 'https://ouwucsjpnjnyjmpeayqb.supabase.co';
+    const redirectUrl = encodeURIComponent(window.location.origin + '/studio');
+    window.location.href = `${supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${redirectUrl}`;
   };
 }
 
