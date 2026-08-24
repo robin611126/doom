@@ -113,7 +113,7 @@ async function ensureDevice(deviceId) {
   registered.add(deviceId);
 }
 
-const deviceFor = (key) => 'd_' + sha256('dev:' + key).slice(0, 22);
+const deviceFor = (key) => sha256('dev:' + key).slice(0, 24);
 
 const fetchModels    = () => cached('models',    6e5, () => call('GET', '/V3/aiServices/models'));
 const fetchWorkflows = () => cached('workflows', 6e5, () => call('GET', '/V3/aiServices/homeWorkflowsV4'));
