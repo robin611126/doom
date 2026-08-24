@@ -263,7 +263,7 @@ export default async function handler(req, res) {
 
       const tag = hmac(MASTER, 'k:' + label).slice(0, 32);
       const key = `master-${enc(label)}_${tag}`;
-      const entry = addKey({ key, label, expiresAt, permissions });
+      const entry = await addKey({ key, label, expiresAt, permissions });
       send(res, 200, { key, label, entry });
       return;
     }
@@ -271,7 +271,7 @@ export default async function handler(req, res) {
     if (m === 'POST' && matchPath('/admin/revoke')) {
       const { key } = req.body || {};
       if (!key) { send(res, 400, { error: 'Key required' }); return; }
-      const ok = revokeKey(key);
+      const ok = await revokeKey(key);
       send(res, 200, { ok });
       return;
     }
@@ -279,7 +279,7 @@ export default async function handler(req, res) {
     if (m === 'POST' && matchPath('/admin/unrevoke')) {
       const { key } = req.body || {};
       if (!key) { send(res, 400, { error: 'Key required' }); return; }
-      const ok = unrevokeKey(key);
+      const ok = await unrevokeKey(key);
       send(res, 200, { ok });
       return;
     }
@@ -287,7 +287,7 @@ export default async function handler(req, res) {
     if (m === 'POST' && matchPath('/admin/delete')) {
       const { key } = req.body || {};
       if (!key) { send(res, 400, { error: 'Key required' }); return; }
-      const ok = deleteKey(key);
+      const ok = await deleteKey(key);
       send(res, 200, { ok });
       return;
     }
@@ -307,10 +307,11 @@ export default async function handler(req, res) {
     }
 
     if (m === 'GET' && matchPath('/admin/data')) {
-      send(res, 200, { stats: { serverTime: Date.now(), ...getStats() } });
+      const stats = await getStats();
+      send(res, 200, { stats: { serverTime: Date.now(), ...stats } });
       return;
     }
-    if (m === 'GET' && matchPath('/admin/keys')) { send(res, 200, { keys: listKeys() }); return; }
+    if (m === 'GET' && matchPath('/admin/keys')) { send(res, 200, { keys: await listKeys() }); return; }
 
     send(res, 404, { error: 'Admin endpoint not found' });
     return;
