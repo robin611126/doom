@@ -5,6 +5,9 @@ import {
   getKey,
   verifyKeyStatus,
   recordUsage,
+  revokeKey,
+  unrevokeKey,
+  deleteKey,
   listKeys,
   getStats,
 } from '../lib/keys.js';
@@ -236,6 +239,72 @@ export default async function handler(req, res) {
       match = crypto.timingSafeEqual(a, b) && adminHeader === MASTER;
     } catch { match = false; }
     if (!match) { send(res, 403, { error: 'Forbidden: invalid admin secret' }); return; }
+
+    if (m === 'POST' && (matchPath('/admin/mint') || matchPath('/admin/create-key'))) {
+      const { label, durationAmount, durationUnit, permissions } = req.body || {};
+      if (!label || typeof label !== 'string' || label.length > 64) {
+        send(res, 400, { error: 'User label is required (max 64 chars)' });
+        return;
+      }
+
+      let expiresAt = null;
+      const amount = parseInt(durationAmount, 10);
+      if (amount > 0 && durationUnit && durationUnit !== 'unlimited') {
+        const unitMs = {
+          seconds: 1000,
+          minutes: 60 * 1000,
+          hours: 60 * 60 * 1000,
+          days: 24 * 60 * 60 * 1000,
+          months: 30 * 24 * 60 * 60 * 1000,
+          years: 365 * 24 * 60 * 60 * 1000,
+        }[durationUnit] || (24 * 60 * 60 * 1000);
+        expiresAt = Date.now() + (amount * unitMs);
+      }
+
+      const tag = hmac(MASTER, 'k:' + label).slice(0, 32);
+      const key = `master-${enc(label)}_${tag}`;
+      const entry = addKey({ key, label, expiresAt, permissions });
+      send(res, 200, { key, label, entry });
+      return;
+    }
+
+    if (m === 'POST' && matchPath('/admin/revoke')) {
+      const { key } = req.body || {};
+      if (!key) { send(res, 400, { error: 'Key required' }); return; }
+      const ok = revokeKey(key);
+      send(res, 200, { ok });
+      return;
+    }
+
+    if (m === 'POST' && matchPath('/admin/unrevoke')) {
+      const { key } = req.body || {};
+      if (!key) { send(res, 400, { error: 'Key required' }); return; }
+      const ok = unrevokeKey(key);
+      send(res, 200, { ok });
+      return;
+    }
+
+    if (m === 'POST' && matchPath('/admin/delete')) {
+      const { key } = req.body || {};
+      if (!key) { send(res, 400, { error: 'Key required' }); return; }
+      const ok = deleteKey(key);
+      send(res, 200, { ok });
+      return;
+    }
+
+    if (m === 'POST' && matchPath('/admin/verify-key')) {
+      const { key } = req.body || {};
+      if (!key) { send(res, 400, { error: 'Key required' }); return; }
+      const validHMAC = verifyKey(key);
+      const statusObj = verifyKeyStatus(key);
+      send(res, 200, {
+        valid: Boolean(validHMAC),
+        label: validHMAC || statusObj.entry?.label || 'Unknown',
+        status: statusObj.status,
+        entry: statusObj.entry
+      });
+      return;
+    }
 
     if (m === 'GET' && matchPath('/admin/data')) {
       send(res, 200, { stats: { serverTime: Date.now(), ...getStats() } });
