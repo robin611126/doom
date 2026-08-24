@@ -834,6 +834,36 @@ $('#modalCopyPrompt').onclick = () => {
 };
 
 // ══════════════════════════════════════════════════════════
+// RANDOM PROMPTS FEATURE
+// ══════════════════════════════════════════════════════════
+
+const RANDOM_PROMPTS = [
+  'A cinematic shot of a lone astronaut walking on a glowing alien desert at dusk, volumetric light, 35mm film.',
+  'Hyperrealistic cybernetic dragon breathing blue plasma flame over futuristic neon city, 8K, dramatic lighting.',
+  'Slow-motion parrot flying through a misty rainforest canopy illuminated by golden sunbeams.',
+  'Futuristic sports car drifting on a wet neon-lit Tokyo highway at midnight, rain reflections, anamorphic lens.',
+  'Ancient steampunk clockwork city coming to life as gears turn in golden sunset light.',
+  'Underwater tracking shot of bioluminescent jellyfish floating gracefully in deep obsidian waters.',
+  'Epic cinematic camera tilt up of a mystical floating castle above storm clouds, thunder and lightning flashes.',
+  'Close-up macro shot of a glowing mechanical hummingbird sipping nectar from an iridescent crystal flower.',
+  'Photorealistic slow motion ocean wave breaking at sunset with fiery orange and magenta colors.',
+  'Cyberpunk samurai standing on a skyscraper rooftop in a torrential downpour, glowing katana blade.',
+  'Majestic snow leopard running through powdered snow in the Himalayan mountains, 4k ultra-high frame rate.',
+  'Mystical forest pathway illuminated by floating glowing blue lotus blossoms at midnight.'
+];
+
+function setRandomPrompt() {
+  const prompt = RANDOM_PROMPTS[Math.floor(Math.random() * RANDOM_PROMPTS.length)];
+  const input = $('#mainPrompt');
+  if (input) {
+    input.value = prompt;
+    if (typeof autoResize === 'function') autoResize(input);
+    input.focus();
+    toast('✨ Loaded random prompt!', 'ok');
+  }
+}
+
+// ══════════════════════════════════════════════════════════
 // SEARCH & INPUT EVENTS
 // ══════════════════════════════════════════════════════════
 
@@ -841,6 +871,9 @@ $('#textModelSearch').oninput = (e) => { state.textSearch = e.target.value; rend
 $('#imageModelSearch').oninput = (e) => { state.imageSearch = e.target.value; renderModels('image'); };
 
 $('#genBtn').onclick = generate;
+
+if ($('#randomBtn')) $('#randomBtn').onclick = setRandomPrompt;
+if ($('#chipRandom')) $('#chipRandom').onclick = (e) => { e.stopPropagation(); closeAllDrawers(); setRandomPrompt(); };
 
 $('#mainPrompt').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {

@@ -1056,6 +1056,26 @@
     .gen-btn.loading .spinner { display: block; }
     .gen-btn.loading .gen-icon { display: none; }
 
+    .random-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--amber);
+      font-size: 16px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+    .random-btn:hover {
+      background: var(--amber-soft);
+      border-color: var(--amber);
+      transform: scale(1.05);
+    }
+
     /* ══════════════════════════════════════════════════════════
        VIDEO PLAYER MODAL
     ══════════════════════════════════════════════════════════ */
@@ -1441,11 +1461,17 @@
             <span class="chip-val" id="chipMediaVal">Upload Image</span>
             <span class="chip-arrow">▼</span>
           </div>
+
+          <div class="ctrl-chip" id="chipRandom">
+            <span class="chip-icon">✨</span>
+            <span class="chip-val">Surprise Me</span>
+          </div>
         </div>
 
         <!-- MAIN PROMPT BAR -->
         <div class="prompt-bar" id="promptBar">
           <textarea class="prompt-textarea" id="mainPrompt" placeholder="Describe your cinematic scene..." rows="1"></textarea>
+          <button class="random-btn" id="randomBtn" title="Random Prompt (Surprise Me)">✨</button>
           <button class="gen-btn" id="genBtn" title="Generate Video">
             <span class="gen-icon">⚡</span>
             <div class="spinner"></div>
