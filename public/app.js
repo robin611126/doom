@@ -362,15 +362,21 @@ function renderOptions(kind) {
   const inp = m.inputs;
   let html = '';
 
-  if (inp.aspect_ratio) {
+  if (inp.aspect_ratio && Array.isArray(inp.aspect_ratio) && inp.aspect_ratio.length > 0) {
     opts.aspect_ratio = opts.aspect_ratio || inp.aspect_ratio[0];
-    html += `<label>Aspect ratio</label><div class="opts">${inp.aspect_ratio.map((a) =>
+    html += `<label>Aspect Ratio</label><div class="opts">${inp.aspect_ratio.map((a) =>
       `<div class="opt ${opts.aspect_ratio === a ? 'on' : ''}" data-k="aspect_ratio" data-v="${a}">${a}</div>`).join('')}</div>`;
   }
-  if (inp.duration_options) {
+  if (inp.duration_options && Array.isArray(inp.duration_options) && inp.duration_options.length > 0) {
     opts.duration = opts.duration || inp.duration_options[0];
     html += `<label>Duration</label><div class="opts">${inp.duration_options.map((d) =>
-      `<div class="opt ${opts.duration === d ? 'on' : ''}" data-k="duration" data-v="${d}">${d}s</div>`).join('')}</div>`;
+      `<div class="opt ${opts.duration == d ? 'on' : ''}" data-k="duration" data-v="${d}">${d}s</div>`).join('')}</div>`;
+  }
+  const qList = inp.quality_options || inp.quality;
+  if (qList && Array.isArray(qList) && qList.length > 0) {
+    opts.quality = opts.quality || qList[0];
+    html += `<label>Quality</label><div class="opts">${qList.map((q) =>
+      `<div class="opt ${opts.quality === q ? 'on' : ''}" data-k="quality" data-v="${q}">${q}</div>`).join('')}</div>`;
   }
 
   cont.innerHTML = html;

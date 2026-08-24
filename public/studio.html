@@ -273,6 +273,19 @@
     label .sub-action { font-size: 11px; text-transform: none; color: var(--accent-bright); cursor: pointer; font-weight: 600; }
     label .sub-action:hover { text-decoration: underline; }
 
+    .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin-bottom: 14px; }
+    .opt {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 10px 12px; font-size: 13px; font-weight: 600; color: var(--text-muted);
+      cursor: pointer; text-align: center; transition: all var(--transition); user-select: none;
+      display: flex; align-items: center; justify-content: center; min-height: 40px;
+    }
+    .opt:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface-hover); }
+    .opt.on {
+      background: var(--accent-soft); border-color: var(--accent); color: var(--accent-bright);
+      box-shadow: 0 0 0 1px var(--accent); font-weight: 700;
+    }
+
     input[type=text], input[type=password], textarea, select {
       width: 100%; background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); color: var(--text); padding: 11px 14px;
@@ -777,7 +790,7 @@
         }
       }
   </script>
-  <script src="app.js?v=2.0.1"></script>
+  <script src="app.js?v=2.0.2"></script>
 </body>
 
 </html>
